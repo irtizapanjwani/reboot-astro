@@ -1,8 +1,9 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { business } from '../config/business';
 ---
 
-<Layout title="Contact - Reboot Your Computer" description="Get in touch with Reboot Computer Repairs. Call 07 3155 2002 or fill out our contact form.">
+<Layout title="Contact - Reboot Computer Repairs" description={`Get in touch with Reboot Computer Repairs. Call ${business.phone} or fill out our contact form. Open 7 AM to 10 PM every day.`}>
   <section style="padding: 4rem 2rem; background: linear-gradient(180deg, #f9fafb 0%, #fff 100%);">
     <div class="wrap">
       <h1 style="text-align: center; margin-bottom: 1rem;">Contact Us</h1>
@@ -20,24 +21,24 @@ import Layout from '../layouts/Layout.astro';
           <h2 style="margin-bottom: 2rem;">Get in Touch</h2>
           <div style="margin-bottom: 2.5rem;">
             <h3 style="color: #DC2626; font-size: 1.125rem; margin-bottom: 0.5rem;">Phone</h3>
-            <a href="tel:+61731552002" style="font-size: 1.25rem; font-weight: 600; color: #DC2626;">07 3155 2002</a>
-            <p style="color: #6b7280; font-size: 0.95rem; margin-top: 0.5rem;">Available Monday–Friday, 9am–5pm. Same-day repairs most cases.</p>
+            <a href={business.phoneHref} style="font-size: 1.25rem; font-weight: 600; color: #DC2626;">{business.phone}</a>
+            <p style="color: #6b7280; font-size: 0.95rem; margin-top: 0.5rem;">{business.phoneNote} {business.hours.summary}</p>
           </div>
 
           <div style="margin-bottom: 2.5rem;">
             <h3 style="color: #DC2626; font-size: 1.125rem; margin-bottom: 0.5rem;">Email</h3>
-            <a href="mailto:info@rebootyourcomputer.com.au" style="font-size: 1.125rem; color: #DC2626;">info@rebootyourcomputer.com.au</a>
+            <a href={`mailto:${business.email}`} style="font-size: 1.125rem; color: #DC2626;">{business.email}</a>
             <p style="color: #6b7280; font-size: 0.95rem; margin-top: 0.5rem;">We'll get back to you within 24 hours.</p>
           </div>
 
           <div style="margin-bottom: 2.5rem;">
             <h3 style="color: #DC2626; font-size: 1.125rem; margin-bottom: 0.5rem;">Service Area</h3>
-            <p style="color: #6b7280;">Brisbane and surrounding suburbs. Free call-out within 15km of city center.</p>
+            <p style="color: #6b7280;">Greater Brisbane, plus {business.areasServed.slice(1).join(', ')}. No call out fees and no travel fees anywhere we service.</p>
           </div>
 
           <div style="background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%); padding: 1.5rem; border-radius: 0.75rem; border-left: 4px solid #DC2626;">
             <h4 style="margin-bottom: 0.5rem;">Hours</h4>
-            <p style="color: #6b7280; font-size: 0.95rem;">Monday–Friday: 9am–5pm<br/>Saturday: 10am–2pm<br/>Sunday: Closed</p>
+            <p style="color: #6b7280; font-size: 0.95rem;">Open every day, 7 AM to 10 PM.<br/>Weekends, public holidays and late nights carry no extra surcharge.</p>
           </div>
         </div>
 
@@ -77,7 +78,7 @@ import Layout from '../layouts/Layout.astro';
     <div class="wrap">
       <h2>Or Call Us Now</h2>
       <p>Quick quote over the phone. No obligation.</p>
-      <a href="tel:+61731552002" class="btn btn-secondary" style="color: var(--color-white); border-color: var(--color-white);">07 3155 2002</a>
+      <a href={business.phoneHref} class="btn btn-secondary cta-invert">{business.phone}</a>
     </div>
   </section>
 </Layout>

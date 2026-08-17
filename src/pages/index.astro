@@ -1,16 +1,105 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import { business } from '../config/business';
+
+// Metadata mirrors the live WordPress homepage exactly — see SEO-BASELINE.md.
+// This page ranks position 8.7 for "computer repairs brisbane"; do not change
+// the title, description, H1 or canonical without checking that file first.
+// The phone number is interpolated from config so it has one home.
+const seoTitle = 'Reboot Computer Repairs Brisbane - Reboot Computer Repairs';
+const seoDescription = `Computer Repairs Brisbane - On-site, expert and affordable solutions for your PC, Mac & laptop repair needs. We provide quick and reliable repairs and services anywhere in Brisbane. We are open everyday from 7 AM to 10 PM even on holidays. Give us a call at ${business.phone} with no call out fees!`;
+
+const pricing = [
+  {
+    name: 'Workshop Repairs',
+    note: 'Open 7 AM to 10 PM',
+    price: '$120',
+    unit: 'per hour',
+    points: [
+      'No call out fees',
+      'No hidden charges',
+      'No fix, no fee',
+      'Fix any computer problem',
+      'Most repairs are done in 1 hour',
+      'Expert technical support',
+    ],
+  },
+  {
+    name: 'On Site Service',
+    note: 'Best value',
+    price: '$120',
+    unit: 'first hour, then $25 per 15 minutes',
+    points: [
+      'No call out fees',
+      'No travel fees',
+      'No hidden charges',
+      'No fix, no fee',
+      'Fix any computer problem',
+      'Most repairs are done in 1 hour',
+      'Expert technical support',
+    ],
+  },
+  {
+    name: 'Remote Service',
+    note: 'For easy to fix PC problems',
+    price: '$25',
+    unit: 'per 15 minutes',
+    points: [
+      'No call out fees',
+      'No hidden charges',
+      'Download special software',
+      'Fix computer problems remotely',
+      'Most repairs are done in 1 hour',
+      'Expert technical support',
+    ],
+  },
+];
+
+const services = [
+  {
+    icon: '🛡️',
+    title: 'Virus & Malware',
+    body: 'Infections removed and the system hardened so it stays clean. Protection set up before you get it back.',
+  },
+  {
+    icon: '💾',
+    title: 'Data Recovery',
+    body: 'Failed and dead drives recovered. Photos, documents and email brought back where the hardware allows it.',
+  },
+  {
+    icon: '🔧',
+    title: 'Laptop & Mac Hardware',
+    body: 'Smashed screens, blank displays, missing keys, laptops that will not power on. MacBook and iMac included.',
+  },
+  {
+    icon: '⚙️',
+    title: 'Setup & Migration',
+    body: 'New machines configured and old ones moved across, so everything is where you left it.',
+  },
+];
 ---
 
-<Layout title="Reboot Your Computer - Fast Computer Repairs Brisbane" description="Expert computer repairs in Brisbane. Same-day service, no call-out fees. Virus removal, data recovery, hardware repair.">
+<Layout title={seoTitle} description={seoDescription}>
   <section class="hero">
     <div class="hero-content">
-      <h1>Fast Computer Repairs<br/>Brisbane & Surrounds</h1>
-      <p>Expert technicians. Same-day service. No call-out fees. We fix it right the first time.</p>
-      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <a href="/contact/" class="btn btn-primary">Book a Repair</a>
-        <a href="/contact/" class="btn btn-secondary">Get in Touch</a>
+      <h1>Computer Repairs Brisbane</h1>
+      <p>
+        On-site, expert and affordable repairs for your PC, Mac and laptop, anywhere in Brisbane.
+        Open every day from 7 AM to 10 PM, holidays included. No call out fees.
+      </p>
+      <div class="hero-actions">
+        <a href="/contact/" class="btn btn-primary">Get a Quote</a>
+        <a href="/services/" class="btn btn-secondary">What We Fix</a>
       </div>
+    </div>
+  </section>
+
+  <section class="intro">
+    <div class="wrap">
+      <p>
+        We cover the Greater Brisbane area, including Logan, Ipswich, Moreton and Redland Bay.
+        We do not have technicians on the Sunshine Coast at the moment.
+      </p>
     </div>
   </section>
 
@@ -18,22 +107,34 @@ import Layout from '../layouts/Layout.astro';
     <div class="wrap">
       <h2>What We Fix</h2>
       <div class="services-grid">
-        <div class="service-card">
-          <h3>🛡️ Virus & Malware</h3>
-          <p>Infected systems cleaned and hardened. Security installed. Protection configured. Same-day results.</p>
-        </div>
-        <div class="service-card">
-          <h3>💾 Data Recovery</h3>
-          <p>Failed hard drives restored. Photos, documents, everything recovered. Professional-grade recovery.</p>
-        </div>
-        <div class="service-card">
-          <h3>🔧 Hardware Repair</h3>
-          <p>Screen replacements. Battery swaps. Port repairs. All brands, all faults. Same-day turnaround.</p>
-        </div>
-        <div class="service-card">
-          <h3>⚙️ Software Setup</h3>
-          <p>New computers configured from scratch. Old systems migrated. Everything runs perfectly.</p>
-        </div>
+        {services.map((service) => (
+          <div class="service-card">
+            <h3>{service.icon} {service.title}</h3>
+            <p>{service.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing">
+    <div class="wrap">
+      <h2>We're Competitive On Our Pricing</h2>
+      <p class="pricing-lead">
+        You choose the time and date. Weekends, public holidays and late nights, with no extra surcharges.
+      </p>
+      <div class="pricing-grid">
+        {pricing.map((tier) => (
+          <div class="pricing-card">
+            <h3>{tier.name}</h3>
+            <p class="pricing-note">{tier.note}</p>
+            <p class="pricing-price"><strong>{tier.price}</strong> <span>{tier.unit}</span></p>
+            <ul>
+              {tier.points.map((point) => <li>{point}</li>)}
+            </ul>
+            <a href="/contact/" class="btn btn-primary">Get a Quote</a>
+          </div>
+        ))}
       </div>
     </div>
   </section>
@@ -43,20 +144,20 @@ import Layout from '../layouts/Layout.astro';
       <h2>Why Choose Reboot?</h2>
       <div class="why-us-grid">
         <div class="why-us-item">
-          <h3>Same-Day Service</h3>
-          <p>Most repairs completed while you wait. Same-day turnaround on almost everything. No lengthy waits.</p>
+          <h3>Open 7 AM to 10 PM</h3>
+          <p>Every day of the year, holidays included. Weekends and late nights carry no extra surcharge.</p>
         </div>
         <div class="why-us-item">
-          <h3>No Call-Out Fees</h3>
-          <p>Honest pricing. You only pay for what we fix. No hidden charges or surprise fees.</p>
+          <h3>No Fix, No Fee</h3>
+          <p>No call out fees, no travel fees, no hidden charges. If we cannot fix it, you do not pay.</p>
         </div>
         <div class="why-us-item">
-          <h3>Expert Technicians</h3>
-          <p>Certified professionals with years of experience. We know every major brand and every fault type.</p>
+          <h3>Usually Done In An Hour</h3>
+          <p>Most repairs are finished within the first hour, whether that is in the workshop or at your place.</p>
         </div>
         <div class="why-us-item">
-          <h3>Warranty Coverage</h3>
-          <p>All repairs backed by warranty. Fix it once, fix it right. Your satisfaction guaranteed.</p>
+          <h3>As Seen On Channel 9</h3>
+          <p>We were interviewed by Channel 9 about slow internet speeds around Brisbane.</p>
         </div>
       </div>
     </div>
@@ -65,10 +166,8 @@ import Layout from '../layouts/Layout.astro';
   <section class="cta-banner">
     <div class="wrap">
       <h2>Computer Playing Up?</h2>
-      <p>Tell us what's wrong and we'll get back to you the same day with a price to fix it.</p>
-      <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
-        <a href="/contact/" class="btn btn-secondary" style="color: var(--color-white); border-color: var(--color-white);">Get in Touch</a>
-      </div>
+      <p>Tell us what is going wrong and we will come back with a price to fix it.</p>
+      <a href="/contact/" class="btn btn-secondary cta-invert">Contact Us</a>
     </div>
   </section>
 </Layout>

@@ -235,6 +235,137 @@ nav a:hover {
   line-height: 1.6;
 }
 
+.hero-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* Intro strip */
+.intro {
+  background: var(--color-gray-50);
+  border-bottom: 1px solid var(--color-gray-200);
+  padding: 2rem 3rem;
+}
+
+.intro p {
+  margin: 0;
+  text-align: center;
+  color: var(--color-gray-600);
+  font-size: 1.0625rem;
+  max-width: 820px;
+  margin-inline: auto;
+}
+
+/* Pricing */
+.pricing {
+  padding: 6rem 3rem;
+  background: var(--color-white);
+}
+
+.pricing h2 {
+  text-align: center;
+  margin-bottom: 0.75rem;
+  color: var(--color-gray-900);
+}
+
+.pricing-lead {
+  text-align: center;
+  color: var(--color-gray-600);
+  max-width: 640px;
+  margin: 0 auto 3.5rem;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  align-items: start;
+}
+
+.pricing-card {
+  background: var(--color-white);
+  border: 2px solid var(--color-gray-200);
+  border-radius: var(--radius-lg);
+  padding: 2.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.pricing-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(to right, var(--color-red), var(--color-orange));
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.pricing-card:hover {
+  transform: translateY(-0.5rem);
+  box-shadow: 0 12px 32px rgba(220, 38, 38, 0.15);
+  border-color: var(--color-red);
+}
+
+.pricing-card h3 {
+  color: var(--color-red);
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.pricing-note {
+  margin: 0;
+  font-size: 0.8125rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-gray-600);
+}
+
+.pricing-price {
+  margin: 0;
+  font-family: var(--font-display);
+  color: var(--color-gray-900);
+  font-variant-numeric: tabular-nums;
+}
+
+.pricing-price strong {
+  font-size: 2.25rem;
+  font-weight: 700;
+}
+
+.pricing-price span {
+  display: block;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--color-gray-600);
+}
+
+.pricing-card ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  color: var(--color-gray-600);
+  font-size: 0.95rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pricing-card .btn {
+  margin-top: auto;
+}
+
+.cta-invert {
+  color: var(--color-white);
+  border-color: var(--color-white);
+}
+
 /* Services Section */
 .services {
   padding: 6rem 3rem;
@@ -397,12 +528,14 @@ nav a:hover {
   }
 
   .services,
-  .why-us {
+  .why-us,
+  .pricing {
     padding: 4rem 2rem;
   }
 
   .services h2,
-  .why-us h2 {
+  .why-us h2,
+  .pricing h2 {
     font-size: 2rem;
     margin-bottom: 2.5rem;
   }

@@ -1,12 +1,51 @@
 ---
 import '../styles/global.css';
+import { business } from '../config/business';
 
 interface Props {
   title?: string;
   description?: string;
+  canonical?: string;
 }
 
-const { title = 'Reboot Computer Repairs', description = 'Fast computer repairs in Brisbane. Same-day service, no call-out fees.' } = Astro.props;
+const SITE = business.site;
+
+const {
+  title = 'Reboot Computer Repairs',
+  description = 'Computer repairs in Brisbane. Open 7 AM to 10 PM every day, no call out fees.',
+  canonical = new URL(Astro.url.pathname, SITE).href,
+} = Astro.props;
+
+// The live WordPress site emits Person schema, which is wrong for a local service
+// business and one of the gaps noted in SEO-BASELINE.md. Facts here come from the
+// live homepage — pricing, hours and service area are real, not placeholders.
+const localBusinessSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: business.name,
+  description: 'Expert and affordable computer repairs in Brisbane.',
+  url: SITE,
+  telephone: business.phoneHref.replace('tel:', ''),
+  priceRange: '$$',
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Brisbane',
+    addressRegion: 'QLD',
+    addressCountry: 'AU',
+  },
+  openingHoursSpecification: [
+    {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: [
+        'Monday', 'Tuesday', 'Wednesday', 'Thursday',
+        'Friday', 'Saturday', 'Sunday',
+      ],
+      opens: business.hours.opens,
+      closes: business.hours.closes,
+    },
+  ],
+  areaServed: business.areasServed.map((name) => ({ '@type': 'City', name })),
+};
 ---
 
 <!DOCTYPE html>
@@ -19,10 +58,11 @@ const { title = 'Reboot Computer Repairs', description = 'Fast computer repairs 
     <meta property="og:title" content={title}>
     <meta property="og:description" content={description}>
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://rebootyourcomputer.com.au">
+    <meta property="og:url" content={canonical}>
     <meta property="og:locale" content="en_AU">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://rebootyourcomputer.com.au">
+    <meta name="robots" content="index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large">
+    <link rel="canonical" href={canonical}>
+    <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
   </head>
   <body>
     <header class="site-header">
@@ -53,7 +93,7 @@ const { title = 'Reboot Computer Repairs', description = 'Fast computer repairs 
           <div class="footer-section">
             <h4>Contact</h4>
             <p><a href="/contact/">Phone &amp; enquiry form</a></p>
-            <p>Email: <a href="mailto:info@rebootyourcomputer.com.au">info@rebootyourcomputer.com.au</a></p>
+            <p>Email: <a href={`mailto:${business.email}`}>{business.email}</a></p>
           </div>
           <div class="footer-section">
             <h4>Services</h4>
@@ -70,7 +110,7 @@ const { title = 'Reboot Computer Repairs', description = 'Fast computer repairs 
           </div>
         </div>
         <div class="footer-bottom">
-          <p>&copy; 2025 Reboot Your Computer. All rights reserved. Brisbane, Australia.</p>
+          <p>&copy; {new Date().getFullYear()} Reboot Computer Repairs. Brisbane, Australia.</p>
         </div>
       </div>
     </footer>
