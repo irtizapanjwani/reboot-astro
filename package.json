@@ -10,9 +10,10 @@
     "tina:dev": "tinacms dev -c \"astro dev\""
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.2.1",
+    "@tinacms/cli": "^1.5.0",
     "astro": "^4.0.0",
-    "tinacms": "^1.5.0",
-    "@tinacms/cli": "^1.5.0"
+    "tinacms": "^1.5.0"
   },
   "devDependencies": {
     "@types/node": "^20.0.0"

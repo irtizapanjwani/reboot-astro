@@ -44,7 +44,12 @@ import { business } from '../config/business';
 
         <div>
           <h2 style="margin-bottom: 2rem;">Quick Enquiry</h2>
-          <form class="enquiry" method="POST" action="/api/contact" novalidate>
+          <form class="enquiry" method="POST" action={business.formEndpoint} data-ajax={business.formEndpointAjax} novalidate>
+            {/* FormSubmit configuration — hidden inputs it reads, not shown to the customer. */}
+            <input type="hidden" name="_subject" value="Website enquiry — rebootyourcomputer.com.au">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <input type="hidden" name="_next" value="https://www.rebootyourcomputer.com.au/contact/?sent=1">
             <div class="field">
               <label for="name">Your name</label>
               <input id="name" name="name" type="text" autocomplete="name" required maxlength="100" placeholder="John Smith">
@@ -66,10 +71,10 @@ import { business } from '../config/business';
               <textarea id="message" name="message" required maxlength="4000" placeholder="Tell us what the computer is doing."></textarea>
             </div>
 
-            {/* Honeypot — hidden from people, tempting to bots. */}
+            {/* Honeypot. FormSubmit discards any submission where _honey is filled. */}
             <div class="hp" aria-hidden="true">
-              <label for="company">Company</label>
-              <input id="company" name="company" type="text" tabindex="-1" autocomplete="off">
+              <label for="_honey">Leave this empty</label>
+              <input id="_honey" name="_honey" type="text" tabindex="-1" autocomplete="off">
             </div>
 
             <button type="submit" class="btn btn-primary">Send enquiry</button>
@@ -175,12 +180,21 @@ import { business } from '../config/business';
 </style>
 
 <script>
-  // Progressive enhancement. Without JS the form still POSTs to /api/contact
-  // and the endpoint answers; with JS the customer stays on the page.
+  // Progressive enhancement. Without JS the form POSTs straight to FormSubmit,
+  // which redirects back to ?sent=1. With JS we post to FormSubmit's CORS
+  // endpoint instead so the customer never leaves the page.
   const form = document.querySelector<HTMLFormElement>('.enquiry');
   const status = document.querySelector<HTMLParagraphElement>('.form-status');
+  const AJAX_ENDPOINT = form?.dataset.ajax;
 
-  if (form && status) {
+  // Returning from the no-JS path.
+  if (status && new URLSearchParams(location.search).get('sent') === '1') {
+    status.dataset.state = 'ok';
+    status.textContent = 'Thanks — we have got that and will be in touch.';
+    history.replaceState(null, '', location.pathname);
+  }
+
+  if (form && status && AJAX_ENDPOINT) {
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
@@ -206,16 +220,21 @@ import { business } from '../config/business';
       status.textContent = 'Sending…';
 
       try {
-        const res = await fetch(form.action, { method: 'POST', body: data });
+        const res = await fetch(AJAX_ENDPOINT, {
+          method: 'POST',
+          body: data,
+          headers: { accept: 'application/json' },
+        });
         const body = await res.json().catch(() => ({}));
 
-        if (res.ok && body.ok) {
+        // FormSubmit answers with { success: "true" } as a string.
+        if (res.ok && String(body.success) === 'true') {
           form.reset();
           status.dataset.state = 'ok';
           status.textContent = 'Thanks — we have got that and will be in touch.';
         } else {
           status.dataset.state = 'error';
-          status.textContent = body.error || 'Something went wrong. Please call us instead.';
+          status.textContent = body.message || 'Something went wrong. Please call us instead.';
         }
       } catch {
         status.dataset.state = 'error';

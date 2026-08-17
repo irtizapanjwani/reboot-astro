@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Generated fresh on every build by @astrojs/sitemap.
+Sitemap: https://www.rebootyourcomputer.com.au/sitemap-index.xml

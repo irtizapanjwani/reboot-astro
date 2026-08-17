@@ -23,6 +23,18 @@ export const business = {
   // Where contact-form submissions are delivered. Not shown on the site.
   formRecipient: 'robert@zoorepairs.com.au',
 
+  // FormSubmit handles delivery, matching the Gold Coast site rather than
+  // introducing a second provider. First submission triggers a one-time
+  // confirmation email to the address below; after confirming, FormSubmit
+  // issues a hashed endpoint that can replace the address here so it is not
+  // exposed in the page source (Gold Coast uses the hashed form).
+  formEndpoint: 'https://formsubmit.co/robert@zoorepairs.com.au',
+
+  // FormSubmit's CORS-enabled endpoint. The plain endpoint above blocks fetch,
+  // so it serves as the no-JavaScript fallback while this one keeps the
+  // customer on the page when JS is available.
+  formEndpointAjax: 'https://formsubmit.co/ajax/robert@zoorepairs.com.au',
+
   hours: {
     opens: '07:00',
     closes: '22:00',
