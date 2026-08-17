@@ -17,7 +17,11 @@ export const business = {
   phoneHref: 'tel:+61731552002',
   phoneNote: 'Number diverts straight to a technician’s mobile.',
 
-  email: 'info@rebootyourcomputer.com.au',
+  // Public-facing address shown on the site.
+  email: 'hello@rebootyourcomputer.com.au',
+
+  // Where contact-form submissions are delivered. Not shown on the site.
+  formRecipient: 'robert@zoorepairs.com.au',
 
   hours: {
     opens: '07:00',
@@ -27,9 +31,11 @@ export const business = {
 
   areasServed: ['Brisbane', 'Logan', 'Ipswich', 'Moreton Bay', 'Redland Bay'],
 
+  // Rates raised from $120/hr to $150/hr on 2026-08-17, with the after-first-hour
+  // increment scaled from $25 to $37.50 per 15 minutes to match.
   rates: {
-    workshop: '$120 per hour',
-    onsite: '$120 first hour, then $25 per 15 minutes',
-    remote: '$25 per 15 minutes',
+    workshop: { price: '$150', unit: 'per hour' },
+    onsite: { price: '$150', unit: 'first hour, then $37.50 per 15 minutes' },
+    remote: { price: '$37.50', unit: 'per 15 minutes' },
   },
 } as const;

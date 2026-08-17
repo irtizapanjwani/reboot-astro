@@ -64,7 +64,10 @@ Tagline: `Expert and Affordable Computer Repairs in Brisbane`
 
 ## Real business facts (these were guessed wrong in the first draft — use these)
 
-**Pricing**
+**Pricing** — as it stood on the WordPress site. **Superseded 2026-08-17:** rates
+were raised to $150/hr, with the increment scaled to $37.50 per 15 minutes. Current
+values live in `src/config/business.ts`; the figures below are the historical record
+of what the ranking page said, not current prices.
 - Workshop repairs — $120/hr
 - On-site service — $120 first hour, then $25 per 15 minutes
 - Remote service — $25 per 15 minutes

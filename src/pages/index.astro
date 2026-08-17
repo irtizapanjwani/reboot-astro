@@ -13,8 +13,8 @@ const pricing = [
   {
     name: 'Workshop Repairs',
     note: 'Open 7 AM to 10 PM',
-    price: '$120',
-    unit: 'per hour',
+    price: business.rates.workshop.price,
+    unit: business.rates.workshop.unit,
     points: [
       'No call out fees',
       'No hidden charges',
@@ -27,8 +27,8 @@ const pricing = [
   {
     name: 'On Site Service',
     note: 'Best value',
-    price: '$120',
-    unit: 'first hour, then $25 per 15 minutes',
+    price: business.rates.onsite.price,
+    unit: business.rates.onsite.unit,
     points: [
       'No call out fees',
       'No travel fees',
@@ -42,8 +42,8 @@ const pricing = [
   {
     name: 'Remote Service',
     note: 'For easy to fix PC problems',
-    price: '$25',
-    unit: 'per 15 minutes',
+    price: business.rates.remote.price,
+    unit: business.rates.remote.unit,
     points: [
       'No call out fees',
       'No hidden charges',
