@@ -131,8 +131,6 @@ export const onRequestPost: PagesFunction<Env> = async ({ request, env }) => {
   return reply(200, { ok: true });
 };
 
-// Anything other than POST on this path.
-export const onRequest: PagesFunction<Env> = async ({ request, next }) => {
-  if (request.method === 'POST') return next();
-  return new Response('Method Not Allowed', { status: 405, headers: { allow: 'POST' } });
-};
+// Only onRequestPost is exported. A catch-all onRequest export would take
+// precedence over it in Pages, and non-POST methods already fall through to a
+// 404, which is a fine answer for a path with no page behind it.
