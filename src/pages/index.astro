@@ -1,11 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { business } from '../config/business';
+import home from '../content/home/index.json';
 
 // Metadata mirrors the live WordPress homepage exactly — see SEO-BASELINE.md.
 // This page ranks position 8.7 for "computer repairs brisbane"; do not change
 // the title, description, H1 or canonical without checking that file first.
 // The phone number is interpolated from config so it has one home.
+// The H1/hero copy below is editorial and lives in src/content/home/index.json
+// (edit visually via `npm run tina:dev`), NOT here — SEO metadata stays as-is.
 const seoTitle = 'Reboot Computer Repairs Brisbane - Reboot Computer Repairs';
 const seoDescription = `Computer Repairs Brisbane - On-site, expert and affordable solutions for your PC, Mac & laptop repair needs. We provide quick and reliable repairs and services anywhere in Brisbane. We are open everyday from 7 AM to 10 PM even on holidays. Give us a call at ${business.phone} with no call out fees!`;
 
@@ -55,38 +58,13 @@ const pricing = [
   },
 ];
 
-const services = [
-  {
-    icon: '🛡️',
-    title: 'Virus & Malware',
-    body: 'Infections removed and the system hardened so it stays clean. Protection set up before you get it back.',
-  },
-  {
-    icon: '💾',
-    title: 'Data Recovery',
-    body: 'Failed and dead drives recovered. Photos, documents and email brought back where the hardware allows it.',
-  },
-  {
-    icon: '🔧',
-    title: 'Laptop & Mac Hardware',
-    body: 'Smashed screens, blank displays, missing keys, laptops that will not power on. MacBook and iMac included.',
-  },
-  {
-    icon: '⚙️',
-    title: 'Setup & Migration',
-    body: 'New machines configured and old ones moved across, so everything is where you left it.',
-  },
-];
 ---
 
 <Layout title={seoTitle} description={seoDescription}>
   <section class="hero">
     <div class="hero-content">
       <h1>Computer Repairs Brisbane</h1>
-      <p>
-        On-site, expert and affordable repairs for your PC, Mac and laptop, anywhere in Brisbane.
-        Open every day from 7 AM to 10 PM, holidays included. No call out fees.
-      </p>
+      <p>{home.heroBody}</p>
       <div class="hero-actions">
         <a href="/contact/" class="btn btn-primary">Get a Quote</a>
         <a href="/services/" class="btn btn-secondary">What We Fix</a>
@@ -96,10 +74,7 @@ const services = [
 
   <section class="intro">
     <div class="wrap">
-      <p>
-        We cover the Greater Brisbane area, including Logan, Ipswich, Moreton and Redland Bay.
-        We do not have technicians on the Sunshine Coast at the moment.
-      </p>
+      <p>{home.introBody}</p>
     </div>
   </section>
 
@@ -107,7 +82,7 @@ const services = [
     <div class="wrap">
       <h2>What We Fix</h2>
       <div class="services-grid">
-        {services.map((service) => (
+        {home.services.map((service) => (
           <div class="service-card">
             <h3>{service.icon} {service.title}</h3>
             <p>{service.body}</p>
@@ -143,30 +118,20 @@ const services = [
     <div class="wrap">
       <h2>Why Choose Reboot?</h2>
       <div class="why-us-grid">
-        <div class="why-us-item">
-          <h3>Open 7 AM to 10 PM</h3>
-          <p>Every day of the year, holidays included. Weekends and late nights carry no extra surcharge.</p>
-        </div>
-        <div class="why-us-item">
-          <h3>No Fix, No Fee</h3>
-          <p>No call out fees, no travel fees, no hidden charges. If we cannot fix it, you do not pay.</p>
-        </div>
-        <div class="why-us-item">
-          <h3>Usually Done In An Hour</h3>
-          <p>Most repairs are finished within the first hour, whether that is in the workshop or at your place.</p>
-        </div>
-        <div class="why-us-item">
-          <h3>As Seen On Channel 9</h3>
-          <p>We were interviewed by Channel 9 about slow internet speeds around Brisbane.</p>
-        </div>
+        {home.whyUs.map((item) => (
+          <div class="why-us-item">
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
   <section class="cta-banner">
     <div class="wrap">
-      <h2>Computer Playing Up?</h2>
-      <p>Tell us what is going wrong and we will come back with a price to fix it.</p>
+      <h2>{home.ctaHeading}</h2>
+      <p>{home.ctaBody}</p>
       <a href="/contact/" class="btn btn-secondary cta-invert">Contact Us</a>
     </div>
   </section>

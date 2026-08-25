@@ -1,13 +1,14 @@
 ---
 import Layout from '../layouts/Layout.astro';
+import about from '../content/about/index.json';
 ---
 
 <Layout title="About - Reboot Your Computer" description="About Reboot Computer Repairs. Certified technicians fixing computers in Brisbane since 2008.">
   <section style="padding: 4rem 2rem; background: linear-gradient(180deg, #f9fafb 0%, #fff 100%);">
     <div class="wrap">
-      <h1 style="text-align: center; margin-bottom: 1rem;">About Reboot Computer Repairs</h1>
+      <h1 style="text-align: center; margin-bottom: 1rem;">{about.heroHeading}</h1>
       <p style="text-align: center; font-size: 1.125rem; color: #6b7280; max-width: 700px; margin: 0 auto;">
-        Expert computer repairs for Brisbane. We've fixed computers here since 2008.
+        {about.heroBody}
       </p>
     </div>
   </section>
@@ -15,69 +16,32 @@ import Layout from '../layouts/Layout.astro';
   <section style="padding: 4rem 2rem;">
     <div class="wrap">
       <div style="max-width: 900px; margin: 0 auto;">
-
-        <div style="margin-bottom: 4rem;">
-          <h2 style="color: #DC2626; margin-bottom: 1.5rem;">Who We Are</h2>
-          <p style="font-size: 1.0625rem; line-height: 1.8; color: #374151;">
-            Reboot Computer Repairs has fixed computers in Brisbane since 2008. We're a small team of certified technicians, and between us we've seen most of what a PC or laptop can throw at you. We don't make excuses. We don't keep you waiting.
-          </p>
-        </div>
-
-        <div style="margin-bottom: 4rem;">
-          <h2 style="color: #DC2626; margin-bottom: 1.5rem;">What We Fix</h2>
-          <p style="font-size: 1.0625rem; line-height: 1.8; color: #374151;">
-            Most computer problems are predictable. Virus infections. Hard drive failures. Battery wear. Overheating. We diagnose fast, explain what's wrong in plain English, and quote a fair price. If you approve, we fix it. If you don't, you leave with no obligation.
-          </p>
-          <p style="font-size: 1.0625rem; line-height: 1.8; color: #374151; margin-top: 1rem;">
-            Here's what we handle most often. Each one links through to more detail on our <a href="/services/">services page</a>.
-          </p>
-          <ul style="margin: 1.5rem 0; padding-left: 1.5rem; color: #374151;">
-            <li style="margin-bottom: 0.75rem;"><a href="/services/#virus-removal">Virus and malware removal</a></li>
-            <li style="margin-bottom: 0.75rem;"><a href="/services/#data-recovery">Data recovery</a> from failed and dead drives</li>
-            <li style="margin-bottom: 0.75rem;"><a href="/services/#hardware-repair">Hardware repair</a> for screens, batteries and ports</li>
-            <li style="margin-bottom: 0.75rem;"><a href="/services/#setup">New computer setup</a> and data migration</li>
-          </ul>
-        </div>
-
-        <div style="margin-bottom: 4rem;">
-          <h2 style="color: #DC2626; margin-bottom: 1.5rem;">Why We're Different</h2>
-          <ul style="margin: 1.5rem 0; padding-left: 1.5rem; color: #374151;">
-            <li style="margin-bottom: 0.75rem;">No call out fees. You only pay for what we fix.</li>
-            <li style="margin-bottom: 0.75rem;">Open 7 AM to 10 PM every day, holidays included.</li>
-            <li style="margin-bottom: 0.75rem;">Most repairs done within the hour.</li>
-            <li style="margin-bottom: 0.75rem;">No fix, no fee. If we can't fix it, you don't pay.</li>
-          </ul>
-        </div>
-
-        <div style="margin-bottom: 4rem;">
-          <h2 style="color: #DC2626; margin-bottom: 1.5rem;">Pricing</h2>
-          <p style="font-size: 1.0625rem; line-height: 1.8; color: #374151;">
-            Workshop repairs are $150 an hour. On site, it's $150 for the first hour, then $37.50 every 15 minutes. Remote service is $37.50 per 15 minutes. No hidden charges on any of it.
-          </p>
-        </div>
-
-        <div style="margin-bottom: 4rem;">
-          <h2 style="color: #DC2626; margin-bottom: 1.5rem;">Where We Work</h2>
-          <p style="font-size: 1.0625rem; line-height: 1.8; color: #374151;">
-            We cover the Greater Brisbane area, including Logan, Ipswich, Moreton Bay and Redland Bay. We don't have technicians on the Sunshine Coast at the moment.
-          </p>
-        </div>
-
-        <div style="margin-bottom: 4rem;">
-          <h2 style="color: #DC2626; margin-bottom: 1.5rem;">As Seen On Channel 9</h2>
-          <p style="font-size: 1.0625rem; line-height: 1.8; color: #374151;">
-            Channel 9 interviewed us about slow internet speeds around Brisbane.
-          </p>
-        </div>
-
+        {about.sections.map((section) => (
+          <div style="margin-bottom: 4rem;">
+            <h2 style="color: #DC2626; margin-bottom: 1.5rem;">{section.heading}</h2>
+            {section.body && (
+              <p style="font-size: 1.0625rem; line-height: 1.8; color: #374151;">{section.body}</p>
+            )}
+            {section.bullets && section.bullets.length > 0 && (
+              <ul style="margin: 1.5rem 0; padding-left: 1.5rem; color: #374151;">
+                {section.bullets.map((bullet: string) => (
+                  <li style="margin-bottom: 0.75rem;">{bullet}</li>
+                ))}
+              </ul>
+            )}
+            {section.heading === 'What We Fix' && (
+              <p style="margin-top: 1rem;"><a href="/services/">See the full services list &rarr;</a></p>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   </section>
 
   <section class="cta-banner">
     <div class="wrap">
-      <h2>Ready to Get Your Computer Fixed?</h2>
-      <p>Tell us what's going wrong and we'll come back with a price to fix it.</p>
+      <h2>{about.ctaHeading}</h2>
+      <p>{about.ctaBody}</p>
       <a href="/contact/" class="btn btn-secondary" style="color: var(--color-white); border-color: var(--color-white);">Contact Us</a>
     </div>
   </section>
