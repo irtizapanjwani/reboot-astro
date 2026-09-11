@@ -68,10 +68,16 @@ export async function onRequestPost({ request, env }: Context): Promise<Response
   }
   forward.set('_captcha', 'false');
 
+  // FormSubmit rejects requests with no Referer ("Make sure you open this
+  // page through a web server...") since it uses that header to identify
+  // which site is submitting. A server-to-server fetch sends none by
+  // default, so supply one matching the page the enquiry actually came from.
+  const referer = request.headers.get('referer') ?? new URL(request.url).origin;
+
   const deliveryRes = await fetch(env.FORM_ENDPOINT, {
     method: 'POST',
     body: forward,
-    headers: { accept: 'application/json' },
+    headers: { accept: 'application/json', referer },
   });
   const deliveryBody: { success?: string } = await deliveryRes.json().catch(() => ({}));
 
