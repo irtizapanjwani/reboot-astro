@@ -99,10 +99,9 @@ import { DATA_ETHERNET_FALLBACK as d } from '../data/data-ethernet-fallback';
   <section class="pricing" id="quote">
     <div class="wrap" style="max-width: 640px;">
       <h2>Get a Quote</h2>
-      <form class="enquiry" method="POST" action={business.formEndpoint} data-ajax={business.formEndpointAjax} novalidate>
+      <form class="enquiry" method="POST" action={business.formAction} novalidate>
         <input type="hidden" name="_subject" value="Data & ethernet enquiry — rebootyourcomputer.com.au">
         <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_next" value="https://www.rebootyourcomputer.com.au/data-ethernet-installation/?sent=1">
 
         <div class="field">
@@ -143,6 +142,8 @@ import { DATA_ETHERNET_FALLBACK as d } from '../data/data-ethernet-fallback';
           <label for="de-honey">Leave this empty</label>
           <input id="de-honey" name="_honey" type="text" tabindex="-1" autocomplete="off">
         </div>
+
+        <div class="cf-turnstile" data-sitekey={business.turnstileSiteKey}></div>
 
         <button type="submit" class="btn btn-primary">Send</button>
         <p class="form-status" role="status" aria-live="polite"></p>
@@ -311,10 +312,10 @@ import { DATA_ETHERNET_FALLBACK as d } from '../data/data-ethernet-fallback';
   }
 </style>
 
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
   const form = document.querySelector<HTMLFormElement>('.enquiry');
   const status = document.querySelector<HTMLParagraphElement>('.form-status');
-  const AJAX_ENDPOINT = form?.dataset.ajax;
 
   if (status && new URLSearchParams(location.search).get('sent') === '1') {
     status.dataset.state = 'ok';
@@ -322,7 +323,7 @@ import { DATA_ETHERNET_FALLBACK as d } from '../data/data-ethernet-fallback';
     history.replaceState(null, '', location.pathname);
   }
 
-  if (form && status && AJAX_ENDPOINT) {
+  if (form && status) {
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
@@ -331,6 +332,7 @@ import { DATA_ETHERNET_FALLBACK as d } from '../data/data-ethernet-fallback';
       const phone = String(data.get('phone') ?? '').trim();
       const email = String(data.get('email') ?? '').trim();
       const message = String(data.get('message') ?? '').trim();
+      const turnstileToken = String(data.get('cf-turnstile-response') ?? '').trim();
 
       const problems: string[] = [];
       if (!name) problems.push('your name');
@@ -343,19 +345,25 @@ import { DATA_ETHERNET_FALLBACK as d } from '../data/data-ethernet-fallback';
         return;
       }
 
+      if (!turnstileToken) {
+        status.dataset.state = 'error';
+        status.textContent = 'Please wait a moment for verification to finish, then try again.';
+        return;
+      }
+
       form.dataset.sending = 'true';
       status.dataset.state = '';
       status.textContent = 'Sending…';
 
       try {
-        const res = await fetch(AJAX_ENDPOINT, {
+        const res = await fetch(form.action, {
           method: 'POST',
           body: data,
           headers: { accept: 'application/json' },
         });
         const body = await res.json().catch(() => ({}));
 
-        if (res.ok && String(body.success) === 'true') {
+        if (res.ok && body.success) {
           form.reset();
           status.dataset.state = 'ok';
           status.textContent = 'Thanks — we have got that and will be in touch.';

@@ -44,11 +44,10 @@ import { business } from '../config/business';
 
         <div>
           <h2 style="margin-bottom: 2rem;">Quick Enquiry</h2>
-          <form class="enquiry" method="POST" action={business.formEndpoint} data-ajax={business.formEndpointAjax} novalidate>
-            {/* FormSubmit configuration — hidden inputs it reads, not shown to the customer. */}
+          <form class="enquiry" method="POST" action={business.formAction} novalidate>
+            {/* FormSubmit configuration — passed through by /api/enquiry, not shown to the customer. */}
             <input type="hidden" name="_subject" value="Website enquiry — rebootyourcomputer.com.au">
             <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_captcha" value="false">
             <input type="hidden" name="_next" value="https://www.rebootyourcomputer.com.au/contact/?sent=1">
             <div class="field">
               <label for="name">Your name</label>
@@ -71,11 +70,13 @@ import { business } from '../config/business';
               <textarea id="message" name="message" required maxlength="4000" placeholder="Tell us what the computer is doing."></textarea>
             </div>
 
-            {/* Honeypot. FormSubmit discards any submission where _honey is filled. */}
+            {/* Honeypot — belt and braces alongside Turnstile. */}
             <div class="hp" aria-hidden="true">
               <label for="_honey">Leave this empty</label>
               <input id="_honey" name="_honey" type="text" tabindex="-1" autocomplete="off">
             </div>
+
+            <div class="cf-turnstile" data-sitekey={business.turnstileSiteKey}></div>
 
             <button type="submit" class="btn btn-primary">Send enquiry</button>
             <p class="form-status" role="status" aria-live="polite"></p>
@@ -179,13 +180,13 @@ import { business } from '../config/business';
   }
 </style>
 
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
-  // Progressive enhancement. Without JS the form POSTs straight to FormSubmit,
-  // which redirects back to ?sent=1. With JS we post to FormSubmit's CORS
-  // endpoint instead so the customer never leaves the page.
+  // Progressive enhancement. Without JS the form POSTs straight to
+  // /api/enquiry, which redirects back to ?sent=1 on success. With JS we
+  // fetch the same endpoint so the customer never leaves the page.
   const form = document.querySelector<HTMLFormElement>('.enquiry');
   const status = document.querySelector<HTMLParagraphElement>('.form-status');
-  const AJAX_ENDPOINT = form?.dataset.ajax;
 
   // Returning from the no-JS path.
   if (status && new URLSearchParams(location.search).get('sent') === '1') {
@@ -194,7 +195,7 @@ import { business } from '../config/business';
     history.replaceState(null, '', location.pathname);
   }
 
-  if (form && status && AJAX_ENDPOINT) {
+  if (form && status) {
     form.addEventListener('submit', async (event) => {
       event.preventDefault();
 
@@ -203,6 +204,7 @@ import { business } from '../config/business';
       const phone = String(data.get('phone') ?? '').trim();
       const email = String(data.get('email') ?? '').trim();
       const message = String(data.get('message') ?? '').trim();
+      const turnstileToken = String(data.get('cf-turnstile-response') ?? '').trim();
 
       const problems: string[] = [];
       if (!name) problems.push('your name');
@@ -215,20 +217,25 @@ import { business } from '../config/business';
         return;
       }
 
+      if (!turnstileToken) {
+        status.dataset.state = 'error';
+        status.textContent = 'Please wait a moment for verification to finish, then try again.';
+        return;
+      }
+
       form.dataset.sending = 'true';
       status.dataset.state = '';
       status.textContent = 'Sending…';
 
       try {
-        const res = await fetch(AJAX_ENDPOINT, {
+        const res = await fetch(form.action, {
           method: 'POST',
           body: data,
           headers: { accept: 'application/json' },
         });
         const body = await res.json().catch(() => ({}));
 
-        // FormSubmit answers with { success: "true" } as a string.
-        if (res.ok && String(body.success) === 'true') {
+        if (res.ok && body.success) {
           form.reset();
           status.dataset.state = 'ok';
           status.textContent = 'Thanks — we have got that and will be in touch.';

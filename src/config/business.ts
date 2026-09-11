@@ -23,17 +23,19 @@ export const business = {
   // Where contact-form submissions are delivered. Not shown on the site.
   formRecipient: 'robert@zoorepairs.com.au',
 
-  // FormSubmit handles delivery, matching the Gold Coast site rather than
-  // introducing a second provider. First submission triggers a one-time
-  // confirmation email to the address below; after confirming, FormSubmit
-  // issues a hashed endpoint that can replace the address here so it is not
-  // exposed in the page source (Gold Coast uses the hashed form).
-  formEndpoint: 'https://formsubmit.co/robert@zoorepairs.com.au',
+  // Forms POST to our own /api/enquiry (functions/api/enquiry.ts), which
+  // verifies a Turnstile token server-side before forwarding to FormSubmit.
+  // The actual FormSubmit address is no longer in the client bundle — it
+  // lives only in that Cloudflare Pages project's FORM_ENDPOINT env var
+  // (Settings → Environment variables), alongside TURNSTILE_SECRET_KEY.
+  formAction: '/api/enquiry',
 
-  // FormSubmit's CORS-enabled endpoint. The plain endpoint above blocks fetch,
-  // so it serves as the no-JavaScript fallback while this one keeps the
-  // customer on the page when JS is available.
-  formEndpointAjax: 'https://formsubmit.co/ajax/robert@zoorepairs.com.au',
+  // Turnstile's public site key. Safe to commit — it identifies the widget,
+  // not a secret. Widget "Zoo Repairs - contact forms" in the Zoo Digital
+  // Cloudflare account, covering rebootyourcomputer.com.au and
+  // computersgoldcoast.com.au (add more hostnames there, up to 10, as this
+  // pattern rolls out to other sites — same site key everywhere).
+  turnstileSiteKey: '0x4AAAAAAEvyDTREu8mNJdHL',
 
   hours: {
     opens: '07:00',
