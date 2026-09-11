@@ -23,12 +23,16 @@ export const business = {
   // Where contact-form submissions are delivered. Not shown on the site.
   formRecipient: 'robert@zoorepairs.com.au',
 
-  // Forms POST to our own /api/enquiry (functions/api/enquiry.ts), which
-  // verifies a Turnstile token server-side before forwarding to FormSubmit.
-  // The actual FormSubmit address is no longer in the client bundle — it
-  // lives only in that Cloudflare Pages project's FORM_ENDPOINT env var
-  // (Settings → Environment variables), alongside TURNSTILE_SECRET_KEY.
-  formAction: '/api/enquiry',
+  // Forms POST to a shared standalone Worker (not a Cloudflare Pages
+  // Function — this domain isn't a Cloudflare zone, so a same-origin Route
+  // isn't available, and Pages Functions were separately found to crash
+  // with a raw edge 502 on this exact code, so a plain Worker on
+  // workers.dev is used instead). It verifies a Turnstile token
+  // server-side before forwarding to FormSubmit, keyed by the request's
+  // Origin — see zoo-repairs-enquiry Worker in the Zoo Digital Cloudflare
+  // account. The actual FormSubmit address lives only in that Worker's
+  // source, not in this client bundle.
+  formAction: 'https://zoo-repairs-enquiry.zoo-digital-cloudflare-account.workers.dev/',
 
   // Turnstile's public site key. Safe to commit — it identifies the widget,
   // not a secret. Widget "Zoo Repairs - contact forms" in the Zoo Digital
