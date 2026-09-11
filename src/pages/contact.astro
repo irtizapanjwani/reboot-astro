@@ -45,10 +45,9 @@ import { business } from '../config/business';
         <div>
           <h2 style="margin-bottom: 2rem;">Quick Enquiry</h2>
           <form class="enquiry" method="POST" action={business.formAction} novalidate>
-            {/* FormSubmit configuration — passed through by /api/enquiry, not shown to the customer. */}
-            <input type="hidden" name="_subject" value="Website enquiry — rebootyourcomputer.com.au">
-            <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_next" value="https://www.rebootyourcomputer.com.au/contact/?sent=1">
+            <input type="hidden" name="access_key" value={business.web3formsAccessKey}>
+            <input type="hidden" name="subject" value="Website enquiry — rebootyourcomputer.com.au">
+            <input type="hidden" name="redirect" value="https://www.rebootyourcomputer.com.au/contact/?sent=1">
             <div class="field">
               <label for="name">Your name</label>
               <input id="name" name="name" type="text" autocomplete="name" required maxlength="100" placeholder="John Smith">
@@ -70,13 +69,8 @@ import { business } from '../config/business';
               <textarea id="message" name="message" required maxlength="4000" placeholder="Tell us what the computer is doing."></textarea>
             </div>
 
-            {/* Honeypot — belt and braces alongside Turnstile. */}
-            <div class="hp" aria-hidden="true">
-              <label for="_honey">Leave this empty</label>
-              <input id="_honey" name="_honey" type="text" tabindex="-1" autocomplete="off">
-            </div>
-
-            <div class="cf-turnstile" data-sitekey={business.turnstileSiteKey}></div>
+            {/* Web3Forms honeypot — a real bot fills every field; a real visitor never sees this one. */}
+            <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off">
 
             <button type="submit" class="btn btn-primary">Send enquiry</button>
             <p class="form-status" role="status" aria-live="polite"></p>
@@ -180,10 +174,9 @@ import { business } from '../config/business';
   }
 </style>
 
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
   // Progressive enhancement. Without JS the form POSTs straight to
-  // /api/enquiry, which redirects back to ?sent=1 on success. With JS we
+  // Web3Forms, which redirects back to ?sent=1 on success. With JS we
   // fetch the same endpoint so the customer never leaves the page.
   const form = document.querySelector<HTMLFormElement>('.enquiry');
   const status = document.querySelector<HTMLParagraphElement>('.form-status');
@@ -204,7 +197,6 @@ import { business } from '../config/business';
       const phone = String(data.get('phone') ?? '').trim();
       const email = String(data.get('email') ?? '').trim();
       const message = String(data.get('message') ?? '').trim();
-      const turnstileToken = String(data.get('cf-turnstile-response') ?? '').trim();
 
       const problems: string[] = [];
       if (!name) problems.push('your name');
@@ -214,12 +206,6 @@ import { business } from '../config/business';
       if (problems.length) {
         status.dataset.state = 'error';
         status.textContent = `We still need ${problems.join(', ')}.`;
-        return;
-      }
-
-      if (!turnstileToken) {
-        status.dataset.state = 'error';
-        status.textContent = 'Please wait a moment for verification to finish, then try again.';
         return;
       }
 

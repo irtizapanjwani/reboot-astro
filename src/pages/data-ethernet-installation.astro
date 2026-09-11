@@ -100,9 +100,9 @@ import { DATA_ETHERNET_FALLBACK as d } from '../data/data-ethernet-fallback';
     <div class="wrap" style="max-width: 640px;">
       <h2>Get a Quote</h2>
       <form class="enquiry" method="POST" action={business.formAction} novalidate>
-        <input type="hidden" name="_subject" value="Data & ethernet enquiry — rebootyourcomputer.com.au">
-        <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_next" value="https://www.rebootyourcomputer.com.au/data-ethernet-installation/?sent=1">
+        <input type="hidden" name="access_key" value={business.web3formsAccessKey}>
+        <input type="hidden" name="subject" value="Data & ethernet enquiry — rebootyourcomputer.com.au">
+        <input type="hidden" name="redirect" value="https://www.rebootyourcomputer.com.au/data-ethernet-installation/?sent=1">
 
         <div class="field">
           <label for="de-service">Service Required</label>
@@ -138,12 +138,7 @@ import { DATA_ETHERNET_FALLBACK as d } from '../data/data-ethernet-fallback';
           <textarea id="de-details" name="message" required maxlength="4000" placeholder="Tell us about the job."></textarea>
         </div>
 
-        <div class="hp" aria-hidden="true">
-          <label for="de-honey">Leave this empty</label>
-          <input id="de-honey" name="_honey" type="text" tabindex="-1" autocomplete="off">
-        </div>
-
-        <div class="cf-turnstile" data-sitekey={business.turnstileSiteKey}></div>
+        <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off">
 
         <button type="submit" class="btn btn-primary">Send</button>
         <p class="form-status" role="status" aria-live="polite"></p>
@@ -312,7 +307,6 @@ import { DATA_ETHERNET_FALLBACK as d } from '../data/data-ethernet-fallback';
   }
 </style>
 
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 <script>
   const form = document.querySelector<HTMLFormElement>('.enquiry');
   const status = document.querySelector<HTMLParagraphElement>('.form-status');
@@ -332,7 +326,6 @@ import { DATA_ETHERNET_FALLBACK as d } from '../data/data-ethernet-fallback';
       const phone = String(data.get('phone') ?? '').trim();
       const email = String(data.get('email') ?? '').trim();
       const message = String(data.get('message') ?? '').trim();
-      const turnstileToken = String(data.get('cf-turnstile-response') ?? '').trim();
 
       const problems: string[] = [];
       if (!name) problems.push('your name');
@@ -342,12 +335,6 @@ import { DATA_ETHERNET_FALLBACK as d } from '../data/data-ethernet-fallback';
       if (problems.length) {
         status.dataset.state = 'error';
         status.textContent = `We still need ${problems.join(', ')}.`;
-        return;
-      }
-
-      if (!turnstileToken) {
-        status.dataset.state = 'error';
-        status.textContent = 'Please wait a moment for verification to finish, then try again.';
         return;
       }
 

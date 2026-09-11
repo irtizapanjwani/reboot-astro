@@ -23,23 +23,20 @@ export const business = {
   // Where contact-form submissions are delivered. Not shown on the site.
   formRecipient: 'robert@zoorepairs.com.au',
 
-  // Forms POST to a shared standalone Worker (not a Cloudflare Pages
-  // Function — this domain isn't a Cloudflare zone, so a same-origin Route
-  // isn't available, and Pages Functions were separately found to crash
-  // with a raw edge 502 on this exact code, so a plain Worker on
-  // workers.dev is used instead). It verifies a Turnstile token
-  // server-side before forwarding to FormSubmit, keyed by the request's
-  // Origin — see zoo-repairs-enquiry Worker in the Zoo Digital Cloudflare
-  // account. The actual FormSubmit address lives only in that Worker's
-  // source, not in this client bundle.
-  formAction: 'https://zoo-repairs-enquiry.zoo-digital-cloudflare-account.workers.dev/',
-
-  // Turnstile's public site key. Safe to commit — it identifies the widget,
-  // not a secret. Widget "Zoo Repairs - contact forms" in the Zoo Digital
-  // Cloudflare account, covering rebootyourcomputer.com.au and
-  // computersgoldcoast.com.au (add more hostnames there, up to 10, as this
-  // pattern rolls out to other sites — same site key everywhere).
-  turnstileSiteKey: '0x4AAAAAAEvyDTREu8mNJdHL',
+  // Forms POST directly to Web3Forms (api.web3forms.com/submit) — no
+  // Cloudflare Worker or Pages Function in between. Web3Forms' free plan
+  // requires the request to come straight from a real browser (it rejects
+  // server-to-server calls with a 403 "use our API in client side"), so
+  // there's no way to run our own server-side Turnstile check in front of
+  // it without paying for Pro; spam protection on the free plan is
+  // Web3Forms' own honeypot field instead. If real spam shows up, Web3Forms
+  // Pro adds native Turnstile support and this can be revisited then.
+  //
+  // The access key below is meant to be public — Web3Forms' own docs embed
+  // it as a plain hidden input, since the browser has to send it directly.
+  // Rotate it at web3forms.com if it's ever abused.
+  formAction: 'https://api.web3forms.com/submit',
+  web3formsAccessKey: 'b4b2b342-e926-4810-9ff1-29c81faaaeb6',
 
   hours: {
     opens: '07:00',
