@@ -19,10 +19,17 @@ import { SERVICES_FALLBACK } from '../data/services-fallback';
     <div class="wrap">
       <div class="services-grid" id="services-grid">
         {SERVICES_FALLBACK.map((s) => (
-          <div class="service-card">
-            <h3>{s.title}</h3>
-            <p>{s.description}</p>
-          </div>
+          s.link ? (
+            <a href={s.link} class="service-card service-card-link" style="text-decoration: none; color: inherit; display: block;">
+              <h3>{s.title}</h3>
+              <p>{s.description}</p>
+            </a>
+          ) : (
+            <div class="service-card">
+              <h3>{s.title}</h3>
+              <p>{s.description}</p>
+            </div>
+          )
         ))}
       </div>
     </div>

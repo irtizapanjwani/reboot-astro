@@ -22,7 +22,18 @@
     if (grid && page.servicesList && page.servicesList.items && page.servicesList.items.length) {
       grid.innerHTML = page.servicesList.items
         .map(function (s) {
-          return '<div class="service-card"><h3>' + esc(s.title) + '</h3><p>' + esc(s.description) + '</p></div>';
+          var link = '';
+          var titleLower = (s.title || '').toLowerCase();
+          if (titleLower.indexOf('security') !== -1 || titleLower.indexOf('camera') !== -1) {
+            link = '/computer-and-network-security/';
+          } else if (titleLower.indexOf('ethernet') !== -1 || titleLower.indexOf('data cabling') !== -1) {
+            link = '/data-ethernet-installation/';
+          }
+          if (link) {
+            return '<a href="' + link + '" class="service-card service-card-link" style="text-decoration: none; color: inherit; display: block;"><h3>' + esc(s.title) + '</h3><p>' + esc(s.description) + '</p></a>';
+          } else {
+            return '<div class="service-card"><h3>' + esc(s.title) + '</h3><p>' + esc(s.description) + '</p></div>';
+          }
         })
         .join('');
     }

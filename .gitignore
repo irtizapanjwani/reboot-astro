@@ -33,3 +33,7 @@ yarn-error.log*
 .tina/
 /admin/
 tina/__generated__/
+
+# Archives
+*.zip
+*.tar.gz
