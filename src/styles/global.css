@@ -819,6 +819,27 @@ main > .hero:first-child {
   padding: 0.8rem 1rem;
 }
 
+/* Fields keep their own display values, so hidden needs forcing here. */
+.hero-form [hidden] {
+  display: none !important;
+}
+
+.form-thanks h2 {
+  margin-bottom: 0.5rem;
+  font-size: 1.375rem;
+  color: var(--color-ink);
+}
+
+.form-thanks p {
+  margin: 0;
+  color: var(--color-warm-700);
+}
+
+.form-thanks a {
+  font-weight: 600;
+  color: var(--color-red-deep);
+}
+
 .form-submit:focus-visible {
   outline: 2px solid var(--color-red-deep);
   outline-offset: 3px;

@@ -171,11 +171,12 @@ const onsiteAfter = business.rates.onsite.unit.replace(/^first hour,\s*/, '');
         <p class="aside-note"><strong>As seen on Channel 9</strong>Interviewed about slow internet speeds around Brisbane.</p>
       </aside>
 
-      <!-- Posts to Web3Forms, same as the contact page; ?sent=1 shows its thank-you state. -->
+      <!-- Posts to Web3Forms. While the other pages are switched off, Web3Forms
+           sends people back here with ?sent=1 and the form shows a thank-you. -->
       <form class="hero-form" id="quote" action={business.formAction} method="POST" aria-labelledby="hero-form-title">
         <input type="hidden" name="access_key" value={business.web3formsAccessKey} />
         <input type="hidden" name="subject" value="Quote request (homepage) — rebootyourcomputer.com.au" />
-        <input type="hidden" name="redirect" value="https://www.rebootyourcomputer.com.au/contact/?sent=1" />
+        <input type="hidden" name="redirect" value={`${business.site}/?sent=1#quote`} data-redirect />
         <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" hidden />
 
         <div class="form-head">
@@ -212,7 +213,26 @@ const onsiteAfter = business.rates.onsite.unit.replace(/^first hour,\s*/, '');
         <button type="submit" class="btn btn-call form-submit">Get my free quote</button>
         <!-- TODO: confirm warranty terms with the client before launch. -->
         <p class="form-proof form-proof-end">1-year warranty on all repairs</p>
+
+        <div class="form-thanks" role="status" hidden>
+          <h2>Thanks, we&rsquo;ve got it</h2>
+          <p>We&rsquo;ll be in touch about your quote. If it&rsquo;s urgent, call <a href={business.phoneHref}>{business.phone}</a>.</p>
+        </div>
       </form>
+
+      <script>
+        // Return to whichever host the form was sent from (preview or live),
+        // and show the thank-you after Web3Forms redirects back with ?sent=1.
+        const form = document.getElementById('quote');
+        const redirect = form?.querySelector<HTMLInputElement>('[data-redirect]');
+        if (redirect) redirect.value = `${location.origin}/?sent=1#quote`;
+        if (form && new URLSearchParams(location.search).get('sent') === '1') {
+          Array.from(form.children).forEach((el) => {
+            if (el instanceof HTMLElement && !el.classList.contains('form-thanks') && el.tagName !== 'INPUT') el.hidden = true;
+          });
+          form.querySelector<HTMLElement>('.form-thanks')?.removeAttribute('hidden');
+        }
+      </script>
     </div>
   </section>
 
