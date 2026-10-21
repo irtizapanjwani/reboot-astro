@@ -36,13 +36,16 @@ export default defineConfig({
           {
             type: 'object',
             name: 'services',
-            label: 'What We Fix (cards)',
+            label: 'What We Fix (services)',
             list: true,
-            ui: { itemProps: (item) => ({ label: item?.title }) },
+            ui: { itemProps: (item) => ({ label: item?.symptom || item?.title }) },
             fields: [
-              { type: 'string', name: 'icon', label: 'Icon (emoji)' },
-              { type: 'string', name: 'title', label: 'Title' },
-              { type: 'string', name: 'body', label: 'Body', ui: { component: 'textarea' } },
+              { type: 'string', name: 'symptom', label: 'Headline, in the customer\'s words', ui: { description: 'What the customer notices, e.g. "I can\'t get my files back". Shown large.' } },
+              { type: 'string', name: 'title', label: 'Service name (small label)', ui: { description: 'Also used as the page anchor the diagnostic links to, so rename with care.' } },
+              { type: 'string', name: 'icon', label: 'Icon (emoji, not currently shown)' },
+              { type: 'string', name: 'points', label: 'What\'s covered (3-4 short items)', list: true },
+              { type: 'string', name: 'parts', label: 'Laptop parts to light up', list: true, options: ['screen', 'board', 'drive', 'battery', 'wifi', 'ports'] },
+              { type: 'string', name: 'body', label: 'Description', ui: { component: 'textarea' } },
             ],
           },
           {

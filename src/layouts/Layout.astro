@@ -6,6 +6,7 @@ import '@fontsource/public-sans/500.css';
 import '../styles/global.css';
 import { business } from '../config/business';
 import Navbar from '../components/Navbar.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 
 interface Props {
   title?: string;
@@ -76,32 +77,6 @@ const localBusinessSchema = {
       <slot />
     </main>
 
-    <footer class="site-footer">
-      <div class="wrap">
-        <div class="footer-content">
-          <div class="footer-section">
-            <h4>Contact</h4>
-            <p><a href="/contact/">Phone &amp; enquiry form</a></p>
-            <p>Email: <a href={`mailto:${business.email}`}>{business.email}</a></p>
-          </div>
-          <div class="footer-section">
-            <h4>Services</h4>
-            <p><a href="/services/">Virus & Malware Removal</a></p>
-            <p><a href="/services/">Data Recovery</a></p>
-            <p><a href="/services/">Hardware Repair</a></p>
-            <p><a href="/services/">Computer Setup</a></p>
-          </div>
-          <div class="footer-section">
-            <h4>Company</h4>
-            <p><a href="/about/">About Us</a></p>
-            <p><a href="/contact/">Contact</a></p>
-            <p><a href="/privacy/">Privacy Policy</a></p>
-          </div>
-        </div>
-        <div class="footer-bottom">
-          <p>&copy; {new Date().getFullYear()} Reboot Computer Repairs. Brisbane, Australia.</p>
-        </div>
-      </div>
-    </footer>
+    <SiteFooter />
   </body>
 </html>

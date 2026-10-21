@@ -53,4 +53,8 @@ export const business = {
     onsite: { price: '$150', unit: 'first hour, then $37.50 per 15 minutes' },
     remote: { price: '$37.50', unit: 'per 15 minutes' },
   },
+
+  // Standing promises from the live site's pricing tiers (see SEO-BASELINE.md).
+  callOutFee: '$0',
+  typicalRepair: 'Most repairs done in 1 hour',
 } as const;

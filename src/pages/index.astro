@@ -98,6 +98,26 @@ const symptoms = [
   },
 ];
 
+// Hand-drawn marks for the "What we fix" boxes, keyed by service name.
+// Unknown services fall back to the screen mark.
+const tabMarks: Record<string, string> = {
+  popups: 'M9 3.5h11.5v9.5h-3M9 6.5h11.5M3.5 8h11.5v11.5H3.5zM3.5 11h11.5',
+  files: 'M3.5 7.5v10.75a1.25 1.25 0 0 0 1.25 1.25h14.5a1.25 1.25 0 0 0 1.25-1.25V9.25A1.25 1.25 0 0 0 19.25 8h-7.1L10.4 5.5H4.75A1.25 1.25 0 0 0 3.5 6.75zM12 16.75v-5.5M9.6 13.6l2.4-2.4 2.4 2.4',
+  screen: 'M3.5 4.5h17v11.5h-17zM8.5 20h7M12 16v4M13.2 4.6l-2.1 3.9 2.9 2.1-2.1 5.3',
+  setup: 'M5 5.5h14v9.5H5zM3 18.5h18M12 7.8v4.9M9.55 10.25h4.9',
+};
+const tabMarkFor: Record<string, string> = {
+  'Virus & Malware': 'popups',
+  'Data Recovery': 'files',
+  'Laptop & Mac Hardware': 'screen',
+  'Setup & Migration': 'setup',
+};
+
+// Names for the laptop parts a service can light up in "What we fix".
+const partNames: Record<string, string> = {
+  screen: 'screen', board: 'motherboard', drive: 'drive', battery: 'battery', wifi: 'Wi-Fi', ports: 'ports',
+};
+
 // Anchor ids for the "What We Fix" cards, so the no-JS keycaps have somewhere to land.
 const serviceId = (title: string) =>
   'service-' + title.toLowerCase().replace(/&/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
@@ -203,143 +223,343 @@ const onsiteAfter = business.rates.onsite.unit.replace(/^first hour,\s*/, '');
   </section>
 
   <section class="diagnose" id="diagnose">
-    <div class="wrap">
-      <h2>Not sure what&rsquo;s wrong?</h2>
-      <p class="diagnose-lead">Pick what you&rsquo;re seeing. We&rsquo;ll tell you the likely cause, roughly what it costs and how long it takes.</p>
-
-      <ul class="diagnose-grid">
-        {symptoms.map((sym) => (
-          <li>
-            <a href={sym.fallback} class="diagnose-tile" data-symptom={sym.slug}>
-              <span>{sym.label}</span>
-              <span class="diagnose-plus" aria-hidden="true">+</span>
-            </a>
-          </li>
-        ))}
-      </ul>
-
-      <div class="diagnose-panel" id="diagnose-panel" hidden>
-        {symptoms.map((sym) => (
-          <div class="diagnose-answer" data-answer={sym.slug} hidden>
-            <div class="diagnose-cause">
-              <p class="diagnose-label">Likely cause: {sym.label.toLowerCase()}</p>
-              <p class="diagnose-text" tabindex="-1">{sym.cause}</p>
-            </div>
-            <div class="diagnose-side">
-              <dl>
-                <div><dt>Typical cost</dt><dd>{sym.price}</dd></div>
-                <div><dt>Typical turnaround</dt><dd>{sym.time}</dd></div>
-              </dl>
-              <a href={business.phoneHref} class="btn btn-call">
-                <PhoneMark />
-                <span>{business.phone}</span>
+    <div class="wrap diag-layout">
+      <div class="diag-side">
+        <h2>Not sure what&rsquo;s wrong?</h2>
+        <p class="diagnose-lead">Tell us what it&rsquo;s doing and we&rsquo;ll run a quick diagnosis: the likely cause, roughly what it costs and how long it takes.</p>
+        <ul class="symptom-list">
+          {symptoms.map((sym, i) => (
+            <li>
+              <a href={sym.fallback} class="symptom" data-symptom={sym.slug}>
+                <span class="symptom-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+                <span class="symptom-label">{sym.label}</span>
+                <span class="symptom-arrow" aria-hidden="true">&rarr;</span>
               </a>
-              <a href={`/contact/?issue=${sym.slug}`} class="link-quote">Get a free quote</a>
-              <p class="diagnose-small">Estimate only. We confirm the price before any work starts.</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <!-- A laptop drawn in CSS; its screen prints the diagnosis. -->
+      <div class="laptop">
+        <div class="laptop-lid">
+          <div class="laptop-screen" id="diag-screen">
+            <div class="screen-bar">
+              <span>reboot diagnostics</span>
+              <span data-open-status data-opens={business.hours.opens} data-closes={business.hours.closes}><span data-open-text></span></span>
+            </div>
+            <div class="screen-body" aria-live="polite">
+              <div class="screen-idle">
+                <p class="screen-prompt">&gt; waiting for symptom<span class="caret" aria-hidden="true"></span></p>
+                <p class="screen-hint">Pick what you&rsquo;re seeing. Most repairs are done within the hour.</p>
+              </div>
+              {symptoms.map((sym) => (
+                <div class="screen-answer" data-answer={sym.slug} hidden>
+                  <p class="screen-line"><span class="screen-key">symptom</span><span>{sym.label}</span></p>
+                  <p class="screen-line"><span class="screen-key">likely cause</span><span>{sym.cause}</span></p>
+                  <p class="screen-line"><span class="screen-key">typical cost</span><strong>{sym.price}</strong></p>
+                  <p class="screen-line"><span class="screen-key">turnaround</span><span>{sym.time}</span></p>
+                  <div class="screen-actions">
+                    <a href={business.phoneHref} class="btn btn-call">
+                      <PhoneMark />
+                      <span>{business.phone}</span>
+                    </a>
+                    <a href={`/contact/?issue=${sym.slug}`} class="link-quote">Get a free quote</a>
+                  </div>
+                  <p class="screen-small">Estimate only. We confirm the price before any work starts.</p>
+                </div>
+              ))}
             </div>
           </div>
-        ))}
+        </div>
+        <div class="laptop-base" aria-hidden="true"></div>
       </div>
     </div>
   </section>
 
   <script>
-    // Without JS the tiles are plain links to the "What We Fix" cards. With JS
-    // they open the matching answer in the panel under the grid.
-    const panel = document.getElementById('diagnose-panel');
-    const tiles = Array.from(document.querySelectorAll<HTMLAnchorElement>('.diagnose-tile'));
-    const answers = Array.from(document.querySelectorAll<HTMLElement>('.diagnose-answer'));
+    // Without JS the symptoms are plain links to the "What We Fix" cards.
+    // With JS they print the matching diagnosis on the laptop screen.
+    const screen = document.getElementById('diag-screen');
+    const symptoms = Array.from(document.querySelectorAll<HTMLAnchorElement>('.symptom'));
+    const idle = screen?.querySelector<HTMLElement>('.screen-idle');
+    const answers = Array.from(screen?.querySelectorAll<HTMLElement>('.screen-answer') ?? []);
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
 
-    tiles.forEach((tile) => {
-      tile.setAttribute('role', 'button');
-      tile.setAttribute('aria-expanded', 'false');
-      tile.setAttribute('aria-controls', 'diagnose-panel');
+    symptoms.forEach((link) => {
+      link.setAttribute('role', 'button');
+      link.setAttribute('aria-pressed', 'false');
+      link.setAttribute('aria-controls', 'diag-screen');
 
-      tile.addEventListener('click', (e) => {
+      link.addEventListener('click', (e) => {
         e.preventDefault();
-        const slug = tile.dataset.symptom;
-        const closing = tile.getAttribute('aria-expanded') === 'true';
+        const slug = link.dataset.symptom;
+        symptoms.forEach((l) => l.setAttribute('aria-pressed', String(l === link)));
+        if (idle) idle.hidden = true;
+        answers.forEach((a) => (a.hidden = a.dataset.answer !== slug));
 
-        tiles.forEach((t) => t.setAttribute('aria-expanded', String(!closing && t === tile)));
-        answers.forEach((a) => (a.hidden = closing || a.dataset.answer !== slug));
-        if (!panel) return;
-        panel.hidden = closing;
-        if (closing) return;
-
-        const answer = answers.find((a) => a.dataset.answer === slug);
-        answer?.querySelector<HTMLElement>('.diagnose-text')?.focus({ preventScroll: true });
-        if (panel.getBoundingClientRect().bottom > window.innerHeight) {
-          panel.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'nearest' });
+        // On stacked layouts the screen sits below the list; bring it into view.
+        const rect = screen?.getBoundingClientRect();
+        if (screen && rect && (rect.top < 0 || rect.bottom > window.innerHeight)) {
+          screen.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'center' });
         }
       });
 
       // Space should press a role=button link too.
-      tile.addEventListener('keydown', (e) => {
+      link.addEventListener('keydown', (e) => {
         if (e.key === ' ') {
           e.preventDefault();
-          tile.click();
+          link.click();
         }
       });
     });
   </script>
 
-  <section class="services" id="what-we-fix">
+  <!-- Sections below use home-* classes so the Services page, which shares
+       .services-grid and .cta-banner, keeps its own look. -->
+  <section class="home-fix" id="what-we-fix">
     <div class="wrap">
-      <h2>What We Fix</h2>
-      <div class="services-grid">
-        {home.services.map((service) => (
-          <div class="service-card" id={serviceId(service.title)}>
-            <h3>{service.icon} {service.title}</h3>
-            <p>{service.body}</p>
-          </div>
-        ))}
+      <h2 class="fix-heading">What we fix</h2>
+      <p class="fix-lead">PCs, Macs and laptops, at your place or ours. If we can&rsquo;t fix it, you don&rsquo;t pay.</p>
+
+      <!-- Switchboard: tabs on wide screens, accordion on phones, and every
+           panel stacked and readable without JS. Works with any number of
+           services from the CMS. -->
+      <div class="fix-switch" data-fix-switch>
+        <div class="fix-tabs" role="tablist" aria-label="What's wrong?" aria-orientation="vertical">
+          {home.services.map((service, i) => (
+            <button
+              type="button"
+              class="fix-tab"
+              role="tab"
+              id={`fix-tab-${i}`}
+              aria-controls={serviceId(service.title)}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+            >
+              <span class="fix-tab-mark" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d={tabMarks[tabMarkFor[service.title] ?? 'screen']} /></svg>
+              </span>
+              <span class="fix-tab-text">
+                <span class="fix-tab-title">{service.symptom ?? service.title}</span>
+                <span class="fix-tab-sub">{service.title}</span>
+              </span>
+              <span class="fix-tab-arrow" aria-hidden="true">&rarr;</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="fix-panels">
+          <!-- Laptop x-ray, drawn in SVG. The script lights up the parts listed
+               on the selected service; without JS it stays hidden. -->
+          <svg class="xray" viewBox="0 0 600 340" aria-hidden="true">
+            <rect class="xray-shell" x="110" y="6" width="380" height="204" rx="14" />
+            <g class="xray-part" data-part="screen">
+              <rect x="124" y="20" width="352" height="176" rx="5" />
+              <path class="xray-detail" d="M150 46h120M150 62h86M150 78h104" />
+            </g>
+            <rect class="xray-shell" x="92" y="212" width="416" height="8" rx="4" />
+            <rect class="xray-shell" x="60" y="224" width="480" height="108" rx="14" />
+            <g class="xray-part" data-part="wifi">
+              <rect x="84" y="242" width="58" height="32" rx="3" />
+              <path class="xray-detail" d="M97 262a16 16 0 0 1 32 0M104 262a9 9 0 0 1 18 0" />
+            </g>
+            <g class="xray-fan">
+              <circle cx="186" cy="262" r="23" />
+              <path d="M186 262l0-17M186 262l15 9M186 262l-15 9" />
+            </g>
+            <g class="xray-part" data-part="board">
+              <rect x="226" y="238" width="152" height="54" rx="3" />
+              <rect class="xray-detail" x="240" y="248" width="30" height="30" rx="2" />
+              <rect class="xray-detail" x="280" y="248" width="42" height="14" rx="2" />
+              <rect class="xray-detail" x="280" y="268" width="20" height="12" rx="2" />
+              <rect class="xray-detail" x="332" y="248" width="34" height="32" rx="2" />
+            </g>
+            <g class="xray-part" data-part="drive">
+              <rect x="394" y="242" width="122" height="36" rx="3" />
+              <path class="xray-detail" d="M406 260h56M474 252v16M482 252v16M490 252v16M498 252v16" />
+            </g>
+            <g class="xray-part" data-part="battery">
+              <rect x="84" y="298" width="432" height="22" rx="3" />
+              <path class="xray-detail" d="M192 298v22M300 298v22M408 298v22" />
+            </g>
+            <g class="xray-part" data-part="ports">
+              <rect x="54" y="246" width="10" height="14" rx="2" />
+              <rect x="54" y="268" width="10" height="10" rx="2" />
+              <rect x="536" y="246" width="10" height="14" rx="2" />
+            </g>
+          </svg>
+
+          {home.services.map((service, i) => (
+            <div class:list={['fix-panel', { 'is-active': i === 0 }]} id={serviceId(service.title)} data-index={i} data-parts={(service.parts ?? []).join(' ')}>
+              <h3 class="fix-acc-head">
+                <button type="button" class="fix-acc-btn" aria-controls={`fix-body-${i}`}>{service.symptom ?? service.title}</button>
+              </h3>
+              <div class="fix-panel-body" id={`fix-body-${i}`}>
+                <div class="fix-detail">
+                  <p class="fix-label">{service.title}</p>
+                  <p class="fix-body">{service.body}</p>
+                  {service.parts?.length > 0 && (
+                    <p class="fix-where">Where we look: {service.parts.map((part) => partNames[part] ?? part).join(', ')}</p>
+                  )}
+                  <p class="fix-actions">
+                    <a href="/contact/">Get a quote for this</a>
+                    <span>or call</span>
+                    <a href={business.phoneHref}>{business.phone}</a>
+                  </p>
+                </div>
+                {service.points?.length > 0 && (
+                  <ul class="fix-points">
+                    {service.points.map((point) => <li><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.2 10.6l3.6 3.5 8-8.4"/></svg>{point}</li>)}
+                  </ul>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
+
+      <!-- One rate for every service. All figures come from business.ts. -->
+      <p class="fix-rate-line">
+        <span><strong>{business.rates.onsite.price}</strong> {business.rates.onsite.unit.replace('first hour', 'first hour on-site')}</span>
+        <span aria-hidden="true">&middot;</span>
+        <span><strong>{business.callOutFee}</strong> call-out</span>
+        <span aria-hidden="true">&middot;</span>
+        <span>{business.typicalRepair}</span>
+      </p>
     </div>
   </section>
 
-  <section class="pricing">
+  <script>
+    // Tabs on wide screens, accordion on phones. Without JS none of this runs:
+    // the tab list stays hidden and every panel shows in full.
+    const root = document.querySelector<HTMLElement>('[data-fix-switch]');
+    if (root) {
+      const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('.fix-tab'));
+      const panels = Array.from(root.querySelectorAll<HTMLElement>('.fix-panel'));
+      const accButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('.fix-acc-btn'));
+      const phone = window.matchMedia('(max-width: 760px)');
+      let active = 0;
+
+      const select = (i: number, focus = false) => {
+        active = i;
+        tabs.forEach((tab, t) => {
+          tab.setAttribute('aria-selected', String(t === i));
+          tab.tabIndex = t === i ? 0 : -1;
+        });
+        panels.forEach((panel, p) => panel.classList.toggle('is-active', p === i));
+        root.dataset.parts = panels[i].dataset.parts ?? '';
+        if (focus) tabs[i].focus();
+      };
+
+      const setMode = () => {
+        const accordion = phone.matches;
+        root.dataset.mode = accordion ? 'accordion' : 'tabs';
+        panels.forEach((panel, p) => {
+          const body = panel.querySelector<HTMLElement>('.fix-panel-body');
+          if (accordion) {
+            panel.removeAttribute('role');
+            panel.removeAttribute('aria-labelledby');
+            panel.removeAttribute('tabindex');
+            const open = p === active;
+            accButtons[p].setAttribute('aria-expanded', String(open));
+            if (body) body.hidden = !open;
+          } else {
+            panel.setAttribute('role', 'tabpanel');
+            panel.setAttribute('aria-labelledby', `fix-tab-${p}`);
+            panel.tabIndex = 0;
+            if (body) body.hidden = false;
+          }
+        });
+        select(active);
+      };
+
+      tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => select(i));
+        tab.addEventListener('mouseenter', () => select(i));
+        tab.addEventListener('keydown', (e) => {
+          const last = tabs.length - 1;
+          const next = { ArrowDown: i + 1, ArrowRight: i + 1, ArrowUp: i - 1, ArrowLeft: i - 1, Home: 0, End: last }[e.key];
+          if (next === undefined) return;
+          e.preventDefault();
+          select((next + tabs.length) % tabs.length, true);
+        });
+      });
+
+      accButtons.forEach((btn, i) => {
+        btn.addEventListener('click', () => {
+          const body = panels[i].querySelector<HTMLElement>('.fix-panel-body');
+          const open = btn.getAttribute('aria-expanded') !== 'true';
+          btn.setAttribute('aria-expanded', String(open));
+          if (body) body.hidden = !open;
+          if (open) active = i;
+        });
+      });
+
+      root.classList.add('is-ready');
+      setMode();
+      phone.addEventListener('change', setMode);
+    }
+  </script>
+
+  <section class="home-section home-pricing">
     <div class="wrap">
-      <h2>We're Competitive On Our Pricing</h2>
-      <p class="pricing-lead">
-        You choose the time and date. Weekends, public holidays and late nights, with no extra surcharges.
-      </p>
-      <div class="pricing-grid">
+      <div class="home-head">
+        <h2>Upfront pricing</h2>
+        <p>You choose the time and date. Weekends, public holidays and late nights, with no extra surcharges.</p>
+      </div>
+      <div class="price-grid">
         {pricing.map((tier) => (
-          <div class="pricing-card">
+          <div class={tier.name === 'On Site Service' ? 'price-card is-featured' : 'price-card'}>
+            <p class="price-note">{tier.note}</p>
             <h3>{tier.name}</h3>
-            <p class="pricing-note">{tier.note}</p>
-            <p class="pricing-price"><strong>{tier.price}</strong> <span>{tier.unit}</span></p>
+            <p class="price-amount"><strong>{tier.price}</strong><span>{tier.unit}</span></p>
             <ul>
               {tier.points.map((point) => <li>{point}</li>)}
             </ul>
-            <a href="/contact/" class="btn btn-primary">Get a Quote</a>
+            <a href="/contact/" class="btn price-btn">Get a quote</a>
           </div>
         ))}
       </div>
     </div>
   </section>
 
-  <section class="why-us">
-    <div class="wrap">
-      <h2>Why Choose Reboot?</h2>
-      <div class="why-us-grid">
-        {home.whyUs.map((item) => (
-          <div class="why-us-item">
-            <h3>{item.title}</h3>
-            <p>{item.body}</p>
-          </div>
-        ))}
+  <section class="home-section home-why">
+    <div class="wrap home-why-grid">
+      <div class="home-why-intro">
+        <h2>Why choose Reboot?</h2>
+        <p>A local team that turns up when it suits you and tells you the price before starting.</p>
       </div>
+      <ol class="why-list">
+        {home.whyUs.map((item, i) => (
+          <li>
+            <span class="why-num" aria-hidden="true">{String(i + 1).padStart(2, '0')}</span>
+            <div>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
     </div>
   </section>
 
-  <section class="cta-banner">
+  <section class="home-section home-cta-wrap">
     <div class="wrap">
-      <h2>{home.ctaHeading}</h2>
-      <p>{home.ctaBody}</p>
-      <a href="/contact/" class="btn btn-secondary cta-invert">Contact Us</a>
-      <p class="cta-note">We don't currently cover the Sunshine Coast.</p>
+      <div class="home-cta">
+        <div class="home-cta-text">
+          <h2>{home.ctaHeading}</h2>
+          <p>{home.ctaBody}</p>
+        </div>
+        <div class="home-cta-actions">
+          <a href={business.phoneHref} class="btn home-cta-call">
+            <PhoneMark />
+            <span>{business.phone}</span>
+          </a>
+          <a href="/contact/" class="home-cta-link">or send us the details</a>
+        </div>
+        <p class="home-cta-note">We don&rsquo;t currently cover the Sunshine Coast.</p>
+      </div>
     </div>
   </section>
 </Layout>

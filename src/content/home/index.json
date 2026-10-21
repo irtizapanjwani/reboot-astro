@@ -2,16 +2,89 @@
   "heroBody": "On-site, expert and affordable repairs for your PC, Mac and laptop, anywhere in Brisbane. Open every day from 7 AM to 10 PM, holidays included. No call out fees.",
   "introBody": "Servicing Greater Brisbane, including Logan, Ipswich, Moreton and Redland Bay.",
   "services": [
-    { "icon": "🛡️", "title": "Virus & Malware", "body": "Infections removed and the system hardened so it stays clean. Protection set up before you get it back." },
-    { "icon": "💾", "title": "Data Recovery", "body": "Failed and dead drives recovered. Photos, documents and email brought back where the hardware allows it." },
-    { "icon": "🔧", "title": "Laptop & Mac Hardware", "body": "Smashed screens, blank displays, missing keys, laptops that will not power on. MacBook and iMac included." },
-    { "icon": "⚙️", "title": "Setup & Migration", "body": "New machines configured and old ones moved across, so everything is where you left it." }
+    {
+      "symptom": "It’s full of pop-ups and running slow",
+      "title": "Virus & Malware",
+      "icon": "🛡️",
+      "body": "We remove the infection, clean up what it left behind and set up protection before you get it back.",
+      "points": [
+        "Pop-ups and fake virus warnings",
+        "Browser hijacks and unwanted toolbars",
+        "Slow start-up and constant freezing",
+        "Protection set up before you get it back"
+      ],
+      "parts": [
+        "screen",
+        "board"
+      ]
+    },
+    {
+      "symptom": "I can’t get my files back",
+      "title": "Data Recovery",
+      "icon": "💾",
+      "body": "We recover photos, documents and email from failed or dead drives, wherever the hardware allows it.",
+      "points": [
+        "Failed and dead hard drives",
+        "Deleted photos and documents",
+        "Lost email",
+        "Backups set up so it doesn’t happen again"
+      ],
+      "parts": [
+        "drive"
+      ]
+    },
+    {
+      "symptom": "The screen’s cracked or it won’t turn on",
+      "title": "Laptop & Mac Hardware",
+      "icon": "🔧",
+      "body": "Smashed screens, blank displays, missing keys and laptops that won’t power on. MacBooks and iMacs included.",
+      "points": [
+        "Cracked screens",
+        "Batteries that won’t hold charge",
+        "Broken charging ports",
+        "Dead keyboards and missing keys"
+      ],
+      "parts": [
+        "screen",
+        "battery",
+        "ports"
+      ]
+    },
+    {
+      "symptom": "I’ve got a new machine to set up",
+      "title": "Setup & Migration",
+      "icon": "⚙️",
+      "body": "We set up the new one and move everything across from the old one, so it’s all where you left it.",
+      "points": [
+        "New PC or Mac set up at your place",
+        "Files, email and photos moved across",
+        "Printers and Wi-Fi connected",
+        "Your software installed and updated"
+      ],
+      "parts": [
+        "drive",
+        "wifi",
+        "ports"
+      ]
+    }
   ],
   "whyUs": [
-    { "title": "Open 7 AM to 10 PM", "body": "Every day of the year, holidays included. Weekends and late nights carry no extra surcharge." },
-    { "title": "No Fix, No Fee", "body": "No call out fees, no travel fees, no hidden charges. If we cannot fix it, you do not pay." },
-    { "title": "Usually Done In An Hour", "body": "Most repairs are finished within the first hour, whether that is in the workshop or at your place." },
-    { "title": "As Seen On Channel 9", "body": "We were interviewed by Channel 9 about slow internet speeds around Brisbane." }
+    {
+      "title": "Open 7 AM to 10 PM",
+      "body": "Every day of the year, holidays included. Weekends and late nights carry no extra surcharge."
+    },
+    {
+      "title": "No Fix, No Fee",
+      "body": "No call out fees, no travel fees, no hidden charges. If we cannot fix it, you do not pay."
+    },
+    {
+      "title": "Usually Done In An Hour",
+      "body": "Most repairs are finished within the first hour, whether that is in the workshop or at your place."
+    },
+    {
+      "title": "As Seen On Channel 9",
+      "body": "We were interviewed by Channel 9 about slow internet speeds around Brisbane."
+    }
   ],
   "ctaHeading": "Computer Playing Up?",
   "ctaBody": "Tell us what is going wrong and we will come back with a price to fix it."

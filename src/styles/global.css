@@ -24,6 +24,11 @@
   --color-hero-circle: rgba(255, 255, 255, 0.1);
   --color-hero-circle-soft: rgba(255, 255, 255, 0.06);
   --color-hero-glass: rgba(15, 6, 7, 0.3);
+  --color-xray-line: rgba(255, 236, 233, 0.45);
+  --color-xray-fill: rgba(255, 255, 255, 0.04);
+  --color-xray-lit: rgba(255, 255, 255, 0.22);
+  --color-nav-red: #E84141;
+  --color-nav-red-light: #F05252;
   --color-on-red: #F6DEDB;
   --color-on-red-line: rgba(255, 236, 233, 0.24);
   --color-ink: #170B0D;
@@ -33,6 +38,8 @@
   --color-warm-300: #C9BAB7;
   --color-warm-600: #6B5F5E;
   --color-warm-700: #5B4A48;
+  --color-bezel: #2A1B1D;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
   --shadow-header-light: 0 6px 18px -8px rgba(60, 10, 14, 0.18);
   --shadow-call: 0 10px 24px -10px rgba(120, 10, 16, 0.7);
@@ -260,8 +267,11 @@ a:hover {
   margin: 0;
 }
 
+/* Soft red under the logo and links, lightening toward the right and
+   touching blue only at the far edge. The short light-red-to-blue blend
+   keeps purple to a sliver. */
 .site-header {
-  background: var(--color-red);
+  background: linear-gradient(90deg, var(--color-nav-red) 0%, var(--color-nav-red) 55%, var(--color-nav-red-light) 82%, var(--color-blue) 100%);
   position: sticky;
   top: 0;
   z-index: 100;
@@ -540,8 +550,15 @@ main > .hero:first-child {
   color: var(--color-white);
 }
 
-/* Wide screens: headline on one line, sized to the space available. */
+/* Wide screens: headline on one line, sized to the space available. The
+   right-hand column is taller than the form here, so the form never reaches
+   the reserved drop row; shrink it so no empty band sits under the hero. */
 @media (min-width: 1101px) {
+  .home-hero {
+    --hero-drop: 1rem;
+    padding-bottom: 1.5rem;
+  }
+
   .hero-stage .hero-msg {
     max-width: none;
   }
@@ -895,149 +912,217 @@ main > .hero:first-child {
   }
 }
 
-/* "Not sure what's wrong?" diagnostic, light warm section. */
+/* "Not sure what's wrong?": symptoms on the left, a CSS laptop on the right
+   whose screen prints the diagnosis. */
 .diagnose {
   background: var(--color-warm-50);
   padding: 5.5rem 0;
   border-bottom: 1px solid var(--color-warm-100);
 }
 
+.diag-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 4rem;
+  align-items: center;
+}
+
 .diagnose h2 {
   margin-bottom: 0.75rem;
+  font-size: clamp(2rem, 1.25rem + 2.4vw, 3rem);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
   color: var(--color-ink);
 }
 
 .diagnose-lead {
-  max-width: 36rem;
-  margin-bottom: 2.5rem;
+  max-width: 30rem;
+  margin-bottom: 2rem;
   font-size: 1.0625rem;
   color: var(--color-warm-700);
 }
 
-.diagnose-grid {
+.symptom-list {
   list-style: none;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  grid-auto-rows: 1fr;
-  gap: 1rem;
+  border-top: 1px solid var(--color-warm-200);
 }
 
-.diagnose-tile {
-  display: flex;
+.symptom-list li {
+  border-bottom: 1px solid var(--color-warm-200);
+}
+
+.symptom {
+  display: grid;
+  grid-template-columns: 2.25rem minmax(0, 1fr) auto;
   align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-  height: 100%;
-  padding: 1.375rem 1.5rem;
-  border: 1px solid var(--color-warm-200);
-  border-radius: var(--radius-lg);
+  gap: 0.75rem;
+  padding: 0.95rem 0.875rem;
+  border-radius: var(--radius-md);
+  color: var(--color-ink);
+  transition: background-color 0.2s ease;
+}
+
+.symptom:hover,
+.symptom[aria-pressed="true"] {
+  color: var(--color-ink);
   background: var(--color-white);
+}
+
+.symptom-num {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-red);
+}
+
+.symptom-label {
   font-family: var(--font-display);
   font-size: 1.1875rem;
   font-weight: 600;
-  color: var(--color-ink);
-  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
 }
 
-.diagnose-tile:hover {
-  color: var(--color-ink);
-  border-color: var(--color-warm-300);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-tile);
+.symptom-arrow {
+  font-size: 1.25rem;
+  color: var(--color-warm-300);
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
-.diagnose-tile[aria-expanded="true"] {
-  border-color: var(--color-red);
-}
-
-.diagnose-tile:focus-visible {
-  outline: 2px solid var(--color-red);
-  outline-offset: 3px;
-}
-
-.diagnose-plus {
-  font-size: 1.625rem;
-  font-weight: 600;
-  line-height: 1;
+.symptom:hover .symptom-arrow,
+.symptom[aria-pressed="true"] .symptom-arrow {
   color: var(--color-red);
-  transition: transform 0.2s ease;
+  transform: translateX(4px);
 }
 
-.diagnose-tile[aria-expanded="true"] .diagnose-plus {
-  transform: rotate(45deg);
+.symptom:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 2px;
 }
 
-.diagnose-panel {
-  margin-top: 1rem;
-  padding: 2.25rem 2.5rem;
-  border: 1px solid var(--color-warm-200);
-  border-radius: var(--radius-lg);
-  background: var(--color-white);
+/* Laptop */
+.laptop {
+  width: 100%;
+  max-width: 40rem;
+  justify-self: end;
 }
 
-.diagnose-answer {
+.laptop-lid {
+  padding: 0.85rem 0.85rem 1.25rem;
+  border-radius: 1.25rem 1.25rem 0.4rem 0.4rem;
+  background: var(--color-bezel);
+  box-shadow: var(--shadow-form);
+}
+
+.laptop-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 21rem;
+  overflow: hidden;
+  border-radius: 0.6rem;
+  background: var(--color-ink);
+  color: var(--color-warm-50);
+}
+
+/* A thin strip of the brand gradient across the top of the screen. */
+.laptop-screen::before {
+  content: '';
+  height: 3px;
+  background: linear-gradient(90deg, var(--hero-grad-red), var(--hero-grad-mid), var(--hero-grad-blue));
+}
+
+.screen-bar {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.6rem 1.25rem;
+  border-bottom: 1px solid var(--color-on-red-line);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--color-warm-300);
+}
+
+.screen-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 1.5rem 1.5rem 1.75rem;
+}
+
+.screen-prompt {
+  margin: 0 0 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 1.125rem;
+  color: var(--color-white);
+}
+
+.caret {
+  display: inline-block;
+  width: 0.6em;
+  height: 1.1em;
+  margin-left: 0.3em;
+  vertical-align: text-bottom;
+  background: var(--color-red);
+  animation: caret-blink 1s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+  50% { opacity: 0; }
+}
+
+.screen-hint {
+  margin: 0;
+  font-size: 0.9375rem;
+  color: var(--color-warm-300);
+}
+
+.screen-line {
   display: grid;
-  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-  gap: 3rem;
-  animation: diagnose-in 0.25s ease both;
+  grid-template-columns: 8.5rem minmax(0, 1fr);
+  gap: 1rem;
+  margin: 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed var(--color-on-red-line);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  animation: screen-print 0.3s ease both;
 }
 
-.diagnose-answer[hidden] {
-  display: none;
-}
+.screen-line:nth-child(2) { animation-delay: 0.12s; }
+.screen-line:nth-child(3) { animation-delay: 0.24s; }
+.screen-line:nth-child(4) { animation-delay: 0.36s; }
 
-@keyframes diagnose-in {
-  from { opacity: 0; transform: translateY(8px); }
+@keyframes screen-print {
+  from { opacity: 0; transform: translateX(-6px); }
   to { opacity: 1; transform: none; }
 }
 
-.diagnose-label {
-  margin-bottom: 0.75rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-warm-700);
+.screen-key {
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-warm-300);
 }
 
-.diagnose-text {
+.screen-line strong {
   font-family: var(--font-display);
-  font-size: 1.625rem;
-  font-weight: 600;
-  line-height: 1.25;
-  letter-spacing: -0.01em;
-  color: var(--color-ink);
+  font-size: 1.125rem;
+  color: var(--color-white);
 }
 
-.diagnose-text:focus {
-  outline: none;
-}
-
-.diagnose-side {
+.screen-actions {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.5rem;
+  margin-top: 1.25rem;
+  animation: screen-print 0.3s ease 0.48s both;
 }
 
-.diagnose-side dl {
-  align-self: stretch;
+.screen-actions .btn {
+  padding: 0.75rem 1.25rem;
 }
 
-.diagnose-side dl > div {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--spacing-md);
-  padding: 0.6rem 0;
-  border-bottom: 1px solid var(--color-warm-100);
-}
-
-.diagnose-side dt {
-  color: var(--color-warm-700);
-}
-
-.diagnose-side dd {
-  font-weight: 500;
-  text-align: right;
-  color: var(--color-ink);
+.screen-actions .btn:focus-visible {
+  outline: 2px solid var(--color-white);
 }
 
 .link-quote {
@@ -1048,35 +1133,81 @@ main > .hero:first-child {
   transition: text-decoration-color 0.2s ease;
 }
 
-.link-quote:hover {
-  text-decoration-color: var(--color-red);
+.screen-actions .link-quote,
+.screen-actions .link-quote:hover {
+  color: var(--color-white);
 }
 
-.diagnose-side .link-quote {
-  color: var(--color-ink);
-  text-decoration-color: var(--color-warm-300);
+.screen-small {
+  margin: 0.875rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-warm-300);
 }
 
-.diagnose-small {
-  margin: 0;
-  font-size: 0.8125rem;
-  color: var(--color-warm-700);
+.laptop-base {
+  position: relative;
+  height: 1rem;
+  margin: 0 -6%;
+  border-radius: 0.2rem 0.2rem 1rem 1rem;
+  background: linear-gradient(to bottom, var(--color-warm-200), var(--color-warm-300));
+  box-shadow: 0 18px 30px -18px rgba(60, 10, 14, 0.5);
+}
+
+/* The finger notch on the front edge. */
+.laptop-base::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 16%;
+  height: 0.35rem;
+  transform: translateX(-50%);
+  border-radius: 0 0 0.5rem 0.5rem;
+  background: var(--color-warm-300);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .diagnose-tile,
-  .diagnose-tile:hover,
-  .diagnose-plus {
+  .caret,
+  .screen-line,
+  .screen-actions {
+    animation: none;
+  }
+
+  .symptom-arrow,
+  .symptom:hover .symptom-arrow,
+  .symptom[aria-pressed="true"] .symptom-arrow {
     transform: none;
     transition: none;
   }
+}
 
-  .diagnose-tile[aria-expanded="true"] .diagnose-plus {
-    transform: rotate(45deg);
+@media (max-width: 960px) {
+  .diag-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
   }
 
-  .diagnose-answer {
-    animation: none;
+  .laptop {
+    justify-self: center;
+  }
+}
+
+@media (max-width: 560px) {
+  .diagnose {
+    padding: 4rem 0;
+  }
+
+  .laptop-lid {
+    padding: 0.5rem 0.5rem 0.9rem;
+  }
+
+  .screen-body {
+    padding: 1.25rem 1rem 1.5rem;
+  }
+
+  .screen-line {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem;
   }
 }
 
@@ -1096,15 +1227,6 @@ main > .hero:first-child {
 
   .nav-mobile:not([hidden]) {
     display: flex;
-  }
-
-  .diagnose-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .diagnose-answer {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 1.75rem;
   }
 }
 
@@ -1149,18 +1271,6 @@ main > .hero:first-child {
     outline: 2px solid var(--color-red-deep);
     outline-offset: -4px;
   }
-
-  .diagnose {
-    padding: 4rem 0;
-  }
-
-  .diagnose-panel {
-    padding: 1.75rem 1.5rem;
-  }
-
-  .diagnose-text {
-    font-size: 1.375rem;
-  }
 }
 
 @media (max-width: 560px) {
@@ -1172,9 +1282,855 @@ main > .hero:first-child {
     font-size: 1.0625rem;
     white-space: nowrap;
   }
+}
 
-  .diagnose-grid {
+/* Homepage sections below the hero, in the hero's language: warm paper,
+   Archivo headings, white cards with warm borders, the red-to-blue gradient
+   saved for the closing call to action. */
+.home-section {
+  padding: 5.5rem 0;
+}
+
+.home-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem 3rem;
+  margin-bottom: 2.75rem;
+}
+
+.home-head h2,
+.home-why-intro h2,
+.home-cta h2 {
+  font-size: clamp(2rem, 1.25rem + 2.4vw, 3rem);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--color-ink);
+}
+
+.home-head p {
+  max-width: 28rem;
+  margin: 0;
+  font-size: 1.0625rem;
+  color: var(--color-warm-600);
+}
+
+/* What we fix: a switchboard. Large symptom lines on the left select what
+   shows in the deep red panel on the right, which bleeds off the viewport. */
+.home-fix {
+  overflow: hidden;
+  background: var(--color-paper);
+  padding: 4rem 0 3rem;
+}
+
+.fix-heading {
+  font-size: clamp(2rem, 1.25rem + 2.4vw, 3rem);
+  letter-spacing: -0.025em;
+  line-height: 1.05;
+  color: var(--color-ink);
+}
+
+.fix-lead {
+  max-width: 34rem;
+  margin: 0.6rem 0 1.75rem;
+  font-size: 1.0625rem;
+  color: var(--color-warm-600);
+}
+
+.fix-switch {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 3rem;
+}
+
+/* Hidden until the script is running; without JS every panel shows. */
+.fix-tabs {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.fix-switch.is-ready .fix-tabs {
+  display: flex;
+}
+
+.fix-switch:not(.is-ready) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+/* Each symptom is a horizontal box: mark, headline and service name, arrow. */
+.fix-tab {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 1rem 1.25rem 1rem 1rem;
+  border: 1.5px solid var(--color-warm-200);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  text-align: left;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.fix-tab:hover {
+  border-color: var(--color-warm-300);
+}
+
+.fix-tab[aria-selected="true"] {
+  border-color: var(--color-red-deep);
+  box-shadow: var(--shadow-tile);
+}
+
+.fix-tab-mark {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius-md);
+  background: var(--color-warm-100);
+  color: var(--color-red-deep);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.fix-tab[aria-selected="true"] .fix-tab-mark {
+  background: var(--color-red-deep);
+  color: var(--color-white);
+}
+
+.fix-tab-mark svg {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.fix-tab-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.fix-tab-title {
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+
+.fix-tab-sub {
+  font-size: 0.8125rem;
+  color: var(--color-warm-600);
+}
+
+.fix-tab-arrow {
+  font-size: 1.25rem;
+  color: var(--color-warm-300);
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.fix-tab:hover .fix-tab-arrow,
+.fix-tab[aria-selected="true"] .fix-tab-arrow {
+  color: var(--color-red-deep);
+  transform: translateX(3px);
+}
+
+.fix-tab:focus-visible,
+.fix-acc-btn:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 4px;
+}
+
+/* Panel area: deep red, running off the right edge. */
+.fix-panels {
+  position: relative;
+  display: grid;
+  color: var(--color-white);
+}
+
+.fix-panels::before {
+  content: '';
+  position: absolute;
+  inset: 0 -100vw 0 0;
+  border-radius: 1.25rem 0 0 1.25rem;
+  background: var(--color-red-deep);
+}
+
+.fix-panel {
+  position: relative;
+  padding: 2.75rem 0 2.75rem 3rem;
+}
+
+.fix-panel + .fix-panel {
+  border-top: 1px solid var(--color-on-red-line);
+}
+
+/* Tabs mode: panels share one cell, so the area is always as tall as the
+   longest entry and switching never moves the page. */
+.fix-switch.is-ready[data-mode="tabs"] .fix-panel {
+  grid-area: 1 / 1;
+  border-top: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.15s ease, visibility 0s linear 0.15s;
+}
+
+.fix-switch.is-ready[data-mode="tabs"] .fix-panel.is-active {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.15s ease;
+}
+
+.fix-panel:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: -6px;
+}
+
+/* Each panel's own headline: shown without JS and as the accordion header
+   on phones; the tab list carries it on wide screens. */
+.fix-acc-head {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  line-height: 1.15;
+  color: var(--color-white);
+}
+
+.fix-acc-btn {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+  color: inherit;
+  cursor: default;
+}
+
+.fix-switch.is-ready[data-mode="tabs"] .fix-acc-head {
+  display: none;
+}
+
+/* Laptop x-ray: white line drawing on the red; the selected service's parts
+   light up. Text detail sits beneath it. */
+.xray {
+  display: none;
+  grid-area: 1 / 1;
+  align-self: center;
+  position: relative;
+  width: calc(100% - 2rem);
+  max-width: 24rem;
+  margin: 2rem 0 2rem 2rem;
+  fill: var(--color-xray-fill);
+  stroke: var(--color-xray-line);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fix-switch.is-ready[data-mode="tabs"] .xray {
+  display: block;
+}
+
+.xray-fan,
+.xray-detail {
+  fill: none;
+}
+
+.xray-part > * {
+  transition: fill 0.2s ease, stroke 0.2s ease;
+}
+
+.fix-switch[data-parts~="screen"] [data-part="screen"] > *,
+.fix-switch[data-parts~="board"] [data-part="board"] > *,
+.fix-switch[data-parts~="drive"] [data-part="drive"] > *,
+.fix-switch[data-parts~="battery"] [data-part="battery"] > *,
+.fix-switch[data-parts~="wifi"] [data-part="wifi"] > *,
+.fix-switch[data-parts~="ports"] [data-part="ports"] > * {
+  fill: var(--color-xray-lit);
+  stroke: var(--color-white);
+  stroke-width: 2.5;
+  animation: xray-glow 1.4s ease-in-out infinite alternate;
+}
+
+.fix-switch[data-parts] .xray-part .xray-detail {
+  fill: none;
+}
+
+@keyframes xray-glow {
+  from { filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0)); }
+  to { filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.7)); }
+}
+
+/* Tabs mode: drawing and text side by side in the red panel, so the panel
+   stays about as tall as the symptom list. */
+.fix-switch.is-ready[data-mode="tabs"] .fix-panels {
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  column-gap: 2rem;
+}
+
+.fix-switch.is-ready[data-mode="tabs"] .fix-panel {
+  grid-area: 1 / 2;
+  align-self: center;
+  padding: 2.25rem 2.5rem 2.25rem 0;
+}
+
+.fix-panel-body {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.fix-label {
+  margin: 0 0 0.6rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-on-red);
+}
+
+.fix-body {
+  margin: 0 0 0.75rem;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  color: var(--color-on-red);
+}
+
+.fix-where {
+  margin: 0 0 1.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  color: var(--color-white);
+}
+
+.fix-points {
+  list-style: none;
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+}
+
+.fix-points li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.fix-points svg {
+  flex-shrink: 0;
+  width: 1.15rem;
+  height: 1.15rem;
+  margin-top: 0.1rem;
+}
+
+.fix-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.6rem;
+  margin: 0;
+  color: var(--color-on-red);
+}
+
+.fix-actions a,
+.fix-actions a:hover {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: var(--color-white);
+  text-decoration: underline;
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 5px;
+}
+
+.fix-actions a:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 3px;
+}
+
+/* The single rate line under the whole block. */
+.fix-rate-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  margin: 1.75rem 0 0;
+  font-size: 1rem;
+  color: var(--color-warm-700);
+}
+
+.fix-rate-line strong {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--color-ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .xray-part > * {
+    transition: none;
+  }
+
+  .fix-switch[data-parts] .xray-part > * {
+    animation: none;
+  }
+
+  .fix-tab,
+  .fix-tab-mark,
+  .fix-tab-arrow,
+  .fix-tab:hover .fix-tab-arrow,
+  .fix-tab[aria-selected="true"] .fix-tab-arrow,
+  .fix-switch.is-ready[data-mode="tabs"] .fix-panel,
+  .fix-switch.is-ready[data-mode="tabs"] .fix-panel.is-active {
+    transition: none;
+  }
+}
+
+@media (max-width: 1100px) and (min-width: 761px) {
+  .fix-switch.is-ready[data-mode="tabs"] .fix-panels {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fix-switch.is-ready[data-mode="tabs"] .fix-panel {
+    grid-area: 2 / 1;
+    padding: 1.5rem 2rem 2rem 2.5rem;
+  }
+
+  .xray {
+    max-width: 18rem;
+    margin-bottom: 0;
+  }
+}
+
+/* Phones: accordion. Symptom headers stacked, the open one's detail beneath. */
+@media (max-width: 760px) {
+  .fix-switch,
+  .fix-switch.is-ready {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .fix-switch.is-ready .fix-tabs {
+    display: none;
+  }
+
+  .fix-panels::before {
+    inset: 0 -100vw;
+    border-radius: 0;
+  }
+
+  .fix-panel {
+    padding: 0;
+  }
+
+  .fix-acc-head {
+    margin: 0;
+    font-size: 1.25rem;
+  }
+
+  .fix-acc-btn {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem 0;
+    cursor: pointer;
+  }
+
+  .fix-switch.is-ready .fix-acc-btn::after {
+    content: '+';
+    font-size: 1.5rem;
+    line-height: 1;
+  }
+
+  .fix-switch.is-ready .fix-acc-btn[aria-expanded="true"]::after {
+    content: '\2212';
+  }
+
+  .fix-acc-btn:focus-visible {
+    outline-color: var(--color-white);
+    outline-offset: 2px;
+  }
+
+  .fix-panel-body {
+    padding-bottom: 1.75rem;
+  }
+
+  .fix-panel-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .fix-body {
+    font-size: 1rem;
+  }
+
+  .fix-rate-line {
+    flex-direction: column;
+  }
+
+  .fix-rate-line [aria-hidden="true"] {
+    display: none;
+  }
+}
+
+/* Pricing */
+.home-pricing {
+  background: var(--color-white);
+}
+
+.price-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: stretch;
+}
+
+.price-card {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 1.75rem;
+  border: 1px solid var(--color-warm-200);
+  border-radius: var(--radius-lg);
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+.price-card > * {
+  position: relative;
+}
+
+.price-note {
+  margin: 0 0 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-red-deep);
+}
+
+.price-card h3 {
+  font-size: 1.375rem;
+  color: inherit;
+}
+
+.price-amount {
+  margin: 1.25rem 0 1.5rem;
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--color-warm-200);
+}
+
+.price-amount strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 3.25rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.price-amount span {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.875rem;
+  color: var(--color-warm-600);
+}
+
+.price-card ul {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 1.75rem;
+}
+
+.price-card li {
+  position: relative;
+  padding-left: 1.1rem;
+  font-size: 0.9375rem;
+  color: var(--color-warm-700);
+}
+
+.price-card li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 0.45rem;
+  height: 2px;
+  background: var(--color-red);
+}
+
+.price-btn {
+  margin-top: auto;
+  background: var(--color-red);
+  color: var(--color-white);
+}
+
+.price-btn:hover {
+  background: var(--color-red-dark);
+  color: var(--color-white);
+}
+
+/* Featured tier: deep red with one soft circle, echoing the hero. */
+.price-card.is-featured {
+  border-color: transparent;
+  background: var(--color-red-deep);
+  color: var(--color-white);
+  box-shadow: var(--shadow-form);
+}
+
+.price-card.is-featured::before {
+  content: '';
+  position: absolute;
+  width: 16rem;
+  height: 16rem;
+  top: -6rem;
+  right: -6rem;
+  border-radius: 50%;
+  background: var(--color-hero-circle);
+}
+
+.is-featured .price-note,
+.is-featured .price-amount span,
+.is-featured li {
+  color: var(--color-on-red);
+}
+
+.is-featured .price-amount {
+  border-bottom-color: var(--color-on-red-line);
+}
+
+.is-featured li::before {
+  background: var(--color-white);
+}
+
+.is-featured .price-btn {
+  background: var(--color-white);
+  color: var(--color-red-deep);
+}
+
+.is-featured .price-btn:hover {
+  background: var(--color-warm-100);
+  color: var(--color-red-deep);
+}
+
+/* Why choose us */
+.home-why {
+  background: var(--color-paper);
+}
+
+.home-why-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(0, 3fr);
+  gap: 3rem;
+}
+
+/* Heading stays in view (below the sticky navbar) while the list scrolls past. */
+.home-why-intro {
+  position: sticky;
+  top: 7rem;
+  align-self: start;
+}
+
+.home-why-intro p {
+  max-width: 24rem;
+  margin: 1rem 0 0;
+  font-size: 1.0625rem;
+  color: var(--color-warm-600);
+}
+
+.why-list {
+  list-style: none;
+}
+
+.why-list li {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: 1rem;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--color-warm-200);
+}
+
+.why-list li:last-child {
+  border-bottom: 1px solid var(--color-warm-200);
+}
+
+/* The red-to-blue gradient, used as type here. */
+.why-num {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--hero-grad-red), var(--hero-grad-blue));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.why-list h3 {
+  margin-bottom: 0.35rem;
+  font-size: 1.25rem;
+  color: var(--color-ink);
+}
+
+.why-list p {
+  margin: 0;
+  color: var(--color-warm-600);
+}
+
+/* Closing call to action: the hero gradient and circles, in a rounded panel. */
+/* Closing call to action: full-width band with the hero gradient and circles. */
+.home-cta-wrap {
+  position: relative;
+  overflow: hidden;
+  padding: 5rem 0;
+  background: linear-gradient(135deg, var(--hero-grad-red) 0%, var(--hero-grad-mid) 50%, var(--hero-grad-blue) 100%);
+  color: var(--color-white);
+}
+
+.home-cta-wrap::before,
+.home-cta-wrap::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.home-cta-wrap::before {
+  width: 34rem;
+  height: 34rem;
+  top: -18rem;
+  right: -6rem;
+  background: var(--color-hero-circle);
+}
+
+.home-cta-wrap::after {
+  width: 18rem;
+  height: 18rem;
+  bottom: -11rem;
+  left: 40%;
+  background: var(--color-hero-circle-soft);
+}
+
+.home-cta {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.5rem 3rem;
+}
+
+.home-cta > * {
+  position: relative;
+}
+
+.home-cta h2 {
+  color: var(--color-white);
+}
+
+.home-cta-text p {
+  max-width: 30rem;
+  margin: 0.75rem 0 0;
+  font-size: 1.125rem;
+  color: var(--color-on-red);
+}
+
+.home-cta-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.home-cta-call {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-white);
+  color: var(--color-red-deep);
+  font-size: 1.125rem;
+  white-space: nowrap;
+}
+
+.home-cta-call:hover {
+  background: var(--color-warm-100);
+  color: var(--color-red-deep);
+}
+
+.home-cta-call:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 3px;
+}
+
+.home-cta-link,
+.home-cta-link:hover {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-white);
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+.home-cta-note {
+  grid-column: 1 / -1;
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--color-on-red);
+}
+
+@media (max-width: 1024px) {
+  .price-grid {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 30rem;
+  }
+
+  .home-why-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2rem;
+  }
+
+  .home-why-intro {
+    position: static;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-section {
+    padding: 4rem 0;
+  }
+
+  .home-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .home-cta {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-cta-wrap {
+    padding: 3.5rem 0;
+  }
+
+  .home-cta-actions {
+    align-items: stretch;
+  }
+
+  .home-cta-wrap::after {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .why-list li {
+    grid-template-columns: 3.25rem minmax(0, 1fr);
+  }
+
+  .why-num {
+    font-size: 2rem;
   }
 }
 
@@ -1182,7 +2138,7 @@ main > .hero:first-child {
 .intro {
   background: var(--color-white);
   border-bottom: 1px solid var(--color-warm-100);
-  padding: 2rem 3rem;
+  padding: 1.25rem 3rem 1.75rem;
 }
 
 .intro p {
@@ -1410,41 +2366,193 @@ main > .hero:first-child {
   margin: 1.25rem 0 0;
 }
 
-/* Footer */
+/* Footer: warm ink with a Brisbane skyline in line art, stroked in the
+   brand red-to-blue gradient. */
 .site-footer {
-  background: var(--color-gray-900);
-  color: var(--color-white);
-  padding: 4rem 3rem 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: var(--color-ink);
+  color: var(--color-warm-300);
 }
 
-.footer-content {
+.skyline {
+  display: block;
+  width: 100%;
+  height: clamp(8rem, 16vw, 15rem);
+}
+
+.skyline-stop-a { stop-color: var(--color-red); }
+.skyline-stop-b { stop-color: var(--color-red-light); }
+.skyline-stop-c { stop-color: var(--color-blue); }
+
+.skyline-art {
+  fill: none;
+  stroke: url(#skyline-grad);
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+
+.skyline-art .sk-fine {
+  stroke-width: 1;
+}
+
+.skyline-art .sk-dash {
+  stroke-dasharray: 3 7;
+}
+
+.footer-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 3rem;
-  margin-bottom: 3rem;
+  grid-template-columns: minmax(0, 1.6fr) repeat(3, minmax(0, 1fr));
+  gap: 2.5rem 3rem;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
 }
 
-.footer-section h4 {
+.footer-logo {
+  display: inline-flex;
+  flex-direction: column;
   margin-bottom: 1rem;
   color: var(--color-white);
 }
 
-.footer-section p, .footer-section a {
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.95rem;
+.footer-logo:hover {
+  color: var(--color-white);
 }
 
-.footer-section a:hover {
-  color: var(--color-red);
+.footer-logo .word {
+  font-family: var(--font-display);
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.footer-logo .tagline {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--color-red-light);
+}
+
+.footer-brand p {
+  max-width: 24rem;
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+.footer-contact {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.footer-contact a {
+  color: var(--color-warm-50);
+}
+
+.footer-contact a:hover {
+  color: var(--color-red-light);
+}
+
+.footer-phone {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.footer-head {
+  margin-bottom: 1rem;
+  font-family: var(--font-display);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-red-light);
+}
+
+.footer-list {
+  list-style: none;
+  display: grid;
+  gap: 0.6rem;
+  font-size: 0.9375rem;
+}
+
+.footer-list a {
+  color: var(--color-warm-300);
+}
+
+.footer-list a:hover {
+  color: var(--color-white);
+}
+
+.footer-areas {
+  grid-template-columns: repeat(2, minmax(0, max-content));
+  column-gap: 1.5rem;
+}
+
+.footer-hours {
+  margin: 0 0 0.35rem;
+  font-size: 0.9375rem;
+}
+
+.footer-hours strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  color: var(--color-white);
+}
+
+.footer-note {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.site-footer a:focus-visible {
+  outline: 2px solid var(--color-red-light);
+  outline-offset: 3px;
 }
 
 .footer-bottom {
-  text-align: center;
-  padding-top: 2rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 0.9rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.75rem;
+  border-top: 1px solid var(--color-on-red-line);
+  font-size: 0.8125rem;
+}
+
+.footer-bottom p {
+  margin: 0;
+}
+
+.footer-bottom nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.footer-bottom a {
+  color: var(--color-warm-300);
+}
+
+.footer-bottom a:hover {
+  color: var(--color-white);
+}
+
+@media (max-width: 960px) {
+  .footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .footer-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 /* Responsive */

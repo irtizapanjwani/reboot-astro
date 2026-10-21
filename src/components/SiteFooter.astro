@@ -1,0 +1,118 @@
+---
+// Site-wide footer for pages using Layout.astro. The skyline is Brisbane in
+// line art (Wheel of Brisbane, City Hall, the CBD, Story Bridge, the river),
+// stroked in the brand red-to-blue gradient. Facts come from business.ts.
+import { business } from '../config/business';
+import PhoneMark from './PhoneMark.astro';
+
+const services = [
+  'Virus & Malware Removal',
+  'Data Recovery',
+  'Hardware Repair',
+  'Computer Setup',
+];
+const year = new Date().getFullYear();
+---
+
+<footer class="site-footer">
+  <svg class="skyline" viewBox="0 0 1440 250" preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="skyline-grad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" class="skyline-stop-a" />
+        <stop offset="0.55" class="skyline-stop-b" />
+        <stop offset="1" class="skyline-stop-c" />
+      </linearGradient>
+    </defs>
+    <g class="skyline-art">
+      <path d="M0 200H1440" />
+      <circle cx="190" cy="112" r="70" />
+      <circle cx="190" cy="112" r="7" />
+      <rect x="256.0" y="109.0" width="8" height="7" rx="2" />
+      <rect x="246.6" y="144.0" width="8" height="7" rx="2" />
+      <rect x="221.0" y="169.6" width="8" height="7" rx="2" />
+      <rect x="186.0" y="179.0" width="8" height="7" rx="2" />
+      <rect x="151.0" y="169.6" width="8" height="7" rx="2" />
+      <rect x="125.4" y="144.0" width="8" height="7" rx="2" />
+      <rect x="116.0" y="109.0" width="8" height="7" rx="2" />
+      <rect x="125.4" y="74.0" width="8" height="7" rx="2" />
+      <rect x="151.0" y="48.4" width="8" height="7" rx="2" />
+      <rect x="186.0" y="39.0" width="8" height="7" rx="2" />
+      <rect x="221.0" y="48.4" width="8" height="7" rx="2" />
+      <rect x="246.6" y="74.0" width="8" height="7" rx="2" />
+      <path class="sk-fine" d="M190 112L260.0 112.0M190 112L250.6 147.0M190 112L225.0 172.6M190 112L190.0 182.0M190 112L155.0 172.6M190 112L129.4 147.0M190 112L120.0 112.0M190 112L129.4 77.0M190 112L155.0 51.4M190 112L190.0 42.0M190 112L225.0 51.4M190 112L250.6 77.0" />
+      <path d="M190 112L152 200M190 112L228 200" />
+      <path d="M330 200V152H510V200M322 152H518M340 140H500V152" />
+      <path class="sk-fine" d="M352 160V200M370 160V200M388 160V200M406 160V200M424 160V200M442 160V200M460 160V200M478 160V200M496 160V200" />
+      <path d="M405 140V62H435V140M402 62H438M405 62L420 30L435 62M420 30V14" />
+      <circle cx="420" cy="88" r="9" /><path class="sk-fine" d="M420 88V82M420 88L425 90" />
+      <rect x="560" y="120" width="40" height="80" />
+      <path class="sk-fine sk-dash" d="M574 132V192M588 132V192" />
+      <rect x="604" y="70" width="46" height="130" />
+      <path class="sk-fine sk-dash" d="M618 82V192M632 82V192" />
+      <rect x="656" y="100" width="36" height="100" />
+      <path class="sk-fine sk-dash" d="M668 112V192M680 112V192" />
+      <rect x="698" y="40" width="52" height="160" />
+      <path class="sk-fine sk-dash" d="M712 52V192M726 52V192M740 52V192" />
+      <rect x="756" y="92" width="40" height="108" />
+      <path class="sk-fine sk-dash" d="M770 104V192M784 104V192" />
+      <rect x="802" y="58" width="44" height="142" />
+      <path class="sk-fine sk-dash" d="M816 70V192M830 70V192" />
+      <rect x="852" y="110" width="34" height="90" />
+      <path class="sk-fine sk-dash" d="M864 122V192M876 122V192" />
+      <rect x="892" y="84" width="40" height="116" />
+      <path class="sk-fine sk-dash" d="M906 96V192M920 96V192" />
+      <path d="M698 40L724 18L750 40M724 18V6" />
+      <path d="M802 58H846M808 58V46H840V58" />
+      <path d="M940 168H1440" />
+      <path d="M940 168L1100 84L1200 138L1300 84L1440 158" />
+      <path d="M1100 84V200M1300 84V200M1092 200V168M1108 200V168M1292 200V168M1308 200V168" />
+      <path class="sk-fine" d="M940.0 168.0V168M940.0 168L966.7 154.0M966.7 154.0V168M966.7 168L993.3 140.0M993.3 140.0V168M993.3 168L1020.0 126.0M1020.0 126.0V168M1020.0 168L1046.7 112.0M1046.7 112.0V168M1046.7 168L1073.3 98.0M1073.3 98.0V168M1073.3 168L1100.0 84.0M1100.0 84.0V168M1100.0 84.0V168M1100.0 168L1125.0 97.5M1125.0 97.5V168M1125.0 168L1150.0 111.0M1150.0 111.0V168M1150.0 168L1175.0 124.5M1175.0 124.5V168M1175.0 168L1200.0 138.0M1200.0 138.0V168M1200.0 138.0V168M1200.0 168L1225.0 124.5M1225.0 124.5V168M1225.0 168L1250.0 111.0M1250.0 111.0V168M1250.0 168L1275.0 97.5M1275.0 97.5V168M1275.0 168L1300.0 84.0M1300.0 84.0V168M1300.0 84.0V168M1300.0 168L1323.3 96.3M1323.3 96.3V168M1323.3 168L1346.7 108.7M1346.7 108.7V168M1346.7 168L1370.0 121.0M1370.0 121.0V168M1370.0 168L1393.3 133.3M1393.3 133.3V168M1393.3 168L1416.7 145.7M1416.7 145.7V168M1416.7 168L1440.0 158.0M1440.0 158.0V168" />
+      <path class="sk-fine" d="M-30 210q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0" />
+      <path class="sk-fine" d="M0 222q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0" />
+      <path class="sk-fine" d="M-30 234q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0q15 -5 30 0t30 0" />
+    </g>
+  </svg>
+
+  <div class="wrap footer-grid">
+    <div class="footer-brand">
+      <a href="/" class="footer-logo">
+        <span class="word">Reboot Your Computer</span>
+        <span class="tagline">Fast Repairs Brisbane</span>
+      </a>
+      <p>On-site computer, Mac and laptop repairs across Greater Brisbane. No call-out fee, and no fix, no fee.</p>
+      <p class="footer-contact">
+        <a href={business.phoneHref} class="footer-phone"><PhoneMark /><span>{business.phone}</span></a>
+        <a href={`mailto:${business.email}`}>{business.email}</a>
+      </p>
+    </div>
+
+    <div>
+      <h2 class="footer-head">Services</h2>
+      <ul class="footer-list">
+        {services.map((s) => <li><a href="/services/">{s}</a></li>)}
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="footer-head">Areas we service</h2>
+      <ul class="footer-list footer-areas">
+        {business.areasServed.map((area) => <li>{area}</li>)}
+      </ul>
+    </div>
+
+    <div>
+      <h2 class="footer-head">Opening hours</h2>
+      <p class="footer-hours"><strong>Every day</strong>7AM &ndash; 10PM</p>
+      <p class="footer-note">Including weekends and public holidays.</p>
+    </div>
+  </div>
+
+  <div class="wrap footer-bottom">
+    <p>&copy; {year} {business.name}. Brisbane, Australia.</p>
+    <nav aria-label="Footer">
+      <a href="/about/">About</a>
+      <a href="/contact/">Contact</a>
+      <a href="/privacy/">Privacy</a>
+    </nav>
+  </div>
+</footer>
