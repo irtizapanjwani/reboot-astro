@@ -419,6 +419,14 @@ a:hover {
   text-underline-offset: 5px;
 }
 
+/* Links to pages that aren't live yet: shown, but not clickable. */
+a.is-disabled,
+a.is-disabled:hover {
+  opacity: 0.55;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 /* White gap between the red navbar and a red hero on any page. */
 main > .hero:first-child {
   margin-top: 1rem;
@@ -721,6 +729,7 @@ main > .hero:first-child {
 
 /* Quote form: overlaps the panel's left and bottom edges. */
 .hero-form {
+  scroll-margin-top: 6rem;
   grid-column: content-start / form-end;
   grid-row: 2 / 5;
   align-self: start;

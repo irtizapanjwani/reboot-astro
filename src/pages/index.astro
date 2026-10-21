@@ -172,7 +172,7 @@ const onsiteAfter = business.rates.onsite.unit.replace(/^first hour,\s*/, '');
       </aside>
 
       <!-- Posts to Web3Forms, same as the contact page; ?sent=1 shows its thank-you state. -->
-      <form class="hero-form" action={business.formAction} method="POST" aria-labelledby="hero-form-title">
+      <form class="hero-form" id="quote" action={business.formAction} method="POST" aria-labelledby="hero-form-title">
         <input type="hidden" name="access_key" value={business.web3formsAccessKey} />
         <input type="hidden" name="subject" value="Quote request (homepage) — rebootyourcomputer.com.au" />
         <input type="hidden" name="redirect" value="https://www.rebootyourcomputer.com.au/contact/?sent=1" />
@@ -264,7 +264,7 @@ const onsiteAfter = business.rates.onsite.unit.replace(/^first hour,\s*/, '');
                       <PhoneMark />
                       <span>{business.phone}</span>
                     </a>
-                    <a href={`/contact/?issue=${sym.slug}`} class="link-quote">Get a free quote</a>
+                    <a href="#quote" class="link-quote">Get a free quote</a>
                   </div>
                   <p class="screen-small">Estimate only. We confirm the price before any work starts.</p>
                 </div>
@@ -403,7 +403,7 @@ const onsiteAfter = business.rates.onsite.unit.replace(/^first hour,\s*/, '');
                     <p class="fix-where">Where we look: {service.parts.map((part) => partNames[part] ?? part).join(', ')}</p>
                   )}
                   <p class="fix-actions">
-                    <a href="/contact/">Get a quote for this</a>
+                    <a href="#quote">Get a quote for this</a>
                     <span>or call</span>
                     <a href={business.phoneHref}>{business.phone}</a>
                   </p>
@@ -517,7 +517,7 @@ const onsiteAfter = business.rates.onsite.unit.replace(/^first hour,\s*/, '');
             <ul>
               {tier.points.map((point) => <li>{point}</li>)}
             </ul>
-            <a href="/contact/" class="btn price-btn">Get a quote</a>
+            <a href="#quote" class="btn price-btn">Get a quote</a>
           </div>
         ))}
       </div>
@@ -556,7 +556,7 @@ const onsiteAfter = business.rates.onsite.unit.replace(/^first hour,\s*/, '');
             <PhoneMark />
             <span>{business.phone}</span>
           </a>
-          <a href="/contact/" class="home-cta-link">or send us the details</a>
+          <a href="#quote" class="home-cta-link">or send us the details</a>
         </div>
         <p class="home-cta-note">We don&rsquo;t currently cover the Sunshine Coast.</p>
       </div>

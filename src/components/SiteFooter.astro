@@ -89,7 +89,7 @@ const year = new Date().getFullYear();
     <div>
       <h2 class="footer-head">Services</h2>
       <ul class="footer-list">
-        {services.map((s) => <li><a href="/services/">{s}</a></li>)}
+        {services.map((s) => <li>{s}</li>)}
       </ul>
     </div>
 
@@ -110,9 +110,10 @@ const year = new Date().getFullYear();
   <div class="wrap footer-bottom">
     <p>&copy; {year} {business.name}. Brisbane, Australia.</p>
     <nav aria-label="Footer">
-      <a href="/about/">About</a>
-      <a href="/contact/">Contact</a>
-      <a href="/privacy/">Privacy</a>
+      <!-- Disabled until these pages are ready. -->
+      <a class="is-disabled" aria-disabled="true">About</a>
+      <a class="is-disabled" aria-disabled="true">Contact</a>
+      <a class="is-disabled" aria-disabled="true">Privacy</a>
     </nav>
   </div>
 </footer>

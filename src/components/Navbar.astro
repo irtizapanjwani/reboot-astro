@@ -11,6 +11,10 @@ const links = [
   { href: '/contact/', label: 'Contact' },
 ];
 
+// Only the homepage is live for now. Add a path here to switch its link back on.
+const livePages = ['/'];
+const isLive = (href: string) => livePages.includes(href);
+
 const path = Astro.url.pathname;
 const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
 ---
@@ -30,8 +34,10 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     </a>
 
     <nav class="site-nav" aria-label="Main">
-      {links.map((link) => (
+      {links.map((link) => isLive(link.href) ? (
         <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>{link.label}</a>
+      ) : (
+        <a class="is-disabled" aria-disabled="true">{link.label}</a>
       ))}
     </nav>
 
@@ -57,8 +63,10 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
   </div>
 
   <nav class="nav-mobile" id="nav-mobile" aria-label="Main" hidden>
-    {links.map((link) => (
+    {links.map((link) => isLive(link.href) ? (
       <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>{link.label}</a>
+    ) : (
+      <a class="is-disabled" aria-disabled="true">{link.label}</a>
     ))}
   </nav>
 </header>
