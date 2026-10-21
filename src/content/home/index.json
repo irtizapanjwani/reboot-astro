@@ -1,6 +1,6 @@
 {
   "heroBody": "On-site, expert and affordable repairs for your PC, Mac and laptop, anywhere in Brisbane. Open every day from 7 AM to 10 PM, holidays included. No call out fees.",
-  "introBody": "We cover the Greater Brisbane area, including Logan, Ipswich, Moreton and Redland Bay. We do not have technicians on the Sunshine Coast at the moment.",
+  "introBody": "Servicing Greater Brisbane, including Logan, Ipswich, Moreton and Redland Bay.",
   "services": [
     { "icon": "🛡️", "title": "Virus & Malware", "body": "Infections removed and the system hardened so it stays clean. Protection set up before you get it back." },
     { "icon": "💾", "title": "Data Recovery", "body": "Failed and dead drives recovered. Photos, documents and email brought back where the hardware allows it." },

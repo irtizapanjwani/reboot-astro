@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
-
 :root {
   --color-red: #DC2626;
   --color-red-dark: #991B1B;
@@ -15,8 +13,37 @@
   --color-gray-900: #0f172a;
   --color-white: #ffffff;
 
-  --font-display: 'Space Grotesk', sans-serif;
-  --font-body: 'Inter', sans-serif;
+  /* Warm palette for the navbar, homepage hero and diagnostic. The hero is
+     deep red on warm white; bright --color-red is only layered on top of it. */
+  --color-paper: #FDF8F7;
+  --color-red-deep: #A51B20;
+  /* Hero panel gradient: the site's original red-to-blue (as on the old .hero). */
+  --hero-grad-red: var(--color-red);
+  --hero-grad-mid: var(--color-red-dark);
+  --hero-grad-blue: var(--color-blue);
+  --color-hero-circle: rgba(255, 255, 255, 0.1);
+  --color-hero-circle-soft: rgba(255, 255, 255, 0.06);
+  --color-hero-glass: rgba(15, 6, 7, 0.3);
+  --color-on-red: #F6DEDB;
+  --color-on-red-line: rgba(255, 236, 233, 0.24);
+  --color-ink: #170B0D;
+  --color-warm-50: #F8F5F5;
+  --color-warm-100: #F5F0EF;
+  --color-warm-200: #E4DAD8;
+  --color-warm-300: #C9BAB7;
+  --color-warm-600: #6B5F5E;
+  --color-warm-700: #5B4A48;
+
+  --shadow-header-light: 0 6px 18px -8px rgba(60, 10, 14, 0.18);
+  --shadow-call: 0 10px 24px -10px rgba(120, 10, 16, 0.7);
+  --shadow-call-bar: 0 -6px 20px rgba(60, 10, 14, 0.2);
+  --shadow-form: 0 32px 64px -28px rgba(60, 10, 14, 0.45), 0 10px 22px -12px rgba(60, 10, 14, 0.22);
+  --shadow-tile: 0 10px 24px -14px rgba(23, 11, 13, 0.35);
+
+  /* Self-hosted through Fontsource (font-display: swap), loaded in Layout.astro:
+     Archivo 600/700 for headings, Public Sans 400/500 for body. */
+  --font-display: 'Archivo', system-ui, sans-serif;
+  --font-body: 'Public Sans', system-ui, sans-serif;
 
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -84,73 +111,12 @@ a:hover {
   padding: 0 var(--spacing-xl);
 }
 
-/* Header */
-.site-header {
-  background: var(--color-white);
-  border-bottom: 1px solid var(--color-gray-200);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.site-header .wrap {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--spacing-lg) var(--spacing-xl);
-}
-
-.brand {
-  display: flex;
-  flex-direction: column;
-  color: var(--color-gray-900);
-  text-decoration: none;
-}
-
-.brand .word {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  font-weight: 700;
-}
-
-.brand .tagline {
-  font-size: 0.75rem;
-  color: var(--color-gray-600);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-nav {
-  display: flex;
-  gap: var(--spacing-2xl);
-}
-
-nav a {
-  font-size: 0.95rem;
-  color: var(--color-gray-700);
-  transition: color 0.2s ease;
-}
-
-nav a:hover {
-  color: var(--color-red);
-}
-
-.header-cta {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-lg);
-}
-
-.phone-link {
-  color: var(--color-red);
-  font-weight: 600;
-}
-
 /* Buttons */
 .btn {
   display: inline-block;
   padding: 1rem 2rem;
   border-radius: var(--radius-lg);
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: 1rem;
   cursor: pointer;
@@ -179,6 +145,40 @@ nav a:hover {
 .btn-secondary:hover {
   background: var(--color-red);
   color: var(--color-white);
+}
+
+/* Solid red call button: the primary conversion action. */
+.btn-call {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  background: var(--color-red);
+  color: var(--color-white);
+  box-shadow: var(--shadow-call);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.btn-call:hover {
+  background: var(--color-red-dark);
+  color: var(--color-white);
+}
+
+.btn-call-sm {
+  padding: 0.625rem 1.125rem;
+  font-size: 0.95rem;
+  box-shadow: none;
+}
+
+.btn-call-lg {
+  padding: 1.0625rem 1.75rem;
+  font-size: 1.0625rem;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 3px;
 }
 
 /* Hero */
@@ -242,17 +242,953 @@ nav a:hover {
   flex-wrap: wrap;
 }
 
+/* Navbar (site-wide): red, with a white gap before the hero. */
+.utility-bar {
+  background: var(--color-red-dark);
+  color: var(--color-white);
+  font-size: 0.8125rem;
+}
+
+.utility-bar .wrap {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding-block: 0.4rem;
+}
+
+.utility-bar p {
+  margin: 0;
+}
+
+.site-header {
+  background: var(--color-red);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: box-shadow 0.2s ease;
+}
+
+.site-header.is-scrolled {
+  box-shadow: var(--shadow-header-light);
+}
+
+.site-header .wrap {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding-block: 0.75rem;
+}
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  color: var(--color-white);
+  justify-self: start;
+}
+
+.brand:hover {
+  color: var(--color-white);
+}
+
+.brand .word {
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.brand .tagline {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  color: var(--color-warm-600);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-white);
+  opacity: 0.9;
+}
+
+.site-nav {
+  display: flex;
+  gap: var(--spacing-xl);
+}
+
+.site-nav a {
+  padding-block: 0.375rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-white);
+}
+
+.site-nav a:hover {
+  color: var(--color-white);
+  box-shadow: inset 0 -2px 0 var(--color-on-red-line);
+}
+
+.site-nav a[aria-current="page"] {
+  color: var(--color-white);
+  box-shadow: inset 0 -2px 0 var(--color-white);
+}
+
+/* White phone button so it stands out on the red bar. */
+.header-call,
+.header-call:hover {
+  background: var(--color-white);
+  color: var(--color-red);
+}
+
+.header-call:hover {
+  background: var(--color-warm-100);
+}
+
+.header-call:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 3px;
+}
+
+.header-actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.nav-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  color: var(--color-red);
+  cursor: pointer;
+}
+
+.nav-toggle svg {
+  width: 24px;
+  height: 24px;
+}
+
+.nav-toggle .nav-toggle-close,
+.nav-toggle[aria-expanded="true"] .nav-toggle-open {
+  display: none;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-close {
+  display: inline;
+}
+
+.nav-toggle:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 3px;
+}
+
+.nav-mobile {
+  display: none;
+  flex-direction: column;
+  border-top: 1px solid var(--color-on-red-line);
+  padding: var(--spacing-sm) var(--spacing-xl) var(--spacing-md);
+}
+
+.nav-mobile a {
+  padding: 0.875rem 0;
+  font-weight: 500;
+  color: var(--color-white);
+  border-bottom: 1px solid var(--color-on-red-line);
+}
+
+.nav-mobile a:last-child {
+  border-bottom: none;
+}
+
+.nav-mobile a[aria-current="page"] {
+  text-decoration: underline;
+  text-underline-offset: 5px;
+}
+
+/* White gap between the red navbar and a red hero on any page. */
+main > .hero:first-child {
+  margin-top: 1rem;
+}
+
+.mobile-call-bar {
+  display: none;
+}
+
+.phone-mark {
+  width: 1.15em;
+  height: 1.15em;
+  flex-shrink: 0;
+}
+
+/* Status text stays hidden until the script has worked out open/closed. */
+[data-open-status]:not(.is-open):not(.is-closed) {
+  display: none;
+}
+
+/* Home hero. One grid: the gradient panel runs from just inside the content
+   column to the right edge of the viewport. The message runs across the top;
+   below it the quote form overhangs the panel's left and bottom edges, with
+   price, call and terms stacked in the column beside it.
+   Columns: gutter | form overhang | form | flexible | gutter. */
+.home-hero {
+  --hero-gutter: max(2rem, calc((100% - 71rem) / 2));
+  --hero-overhang: 3.5rem;
+  --hero-form: 22rem;
+  --hero-drop: 11rem;
+
+  background: var(--color-paper);
+  padding: 1rem 0 2.5rem;
+  overflow: hidden;
+}
+
+.hero-stage {
+  display: grid;
+  grid-template-columns:
+    [full-start] var(--hero-gutter)
+    [content-start] var(--hero-overhang)
+    [red-start] var(--hero-form)
+    [form-end] minmax(0, 25.5rem)
+    [aside-start] minmax(0, 1fr)
+    [content-end] var(--hero-gutter)
+    [full-end];
+  grid-template-rows: auto auto auto var(--hero-drop);
+}
+
+.hero-red {
+  grid-column: red-start / full-end;
+  grid-row: 1 / 4;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--hero-grad-red) 0%, var(--hero-grad-mid) 50%, var(--hero-grad-blue) 100%);
+  border-radius: 1.75rem 0 0 1.75rem;
+}
+
+/* Soft circles, as on the original hero. Both sit right of the text column
+   so they never lower the contrast behind any copy. */
+.hero-red::before,
+.hero-red::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  background: var(--color-hero-circle);
+  pointer-events: none;
+}
+
+/* The panel is positioned for its circles, so the content on top of it
+   must be positioned too to paint above it. */
+.hero-msg,
+.hero-offer,
+.hero-terms,
+.hero-aside {
+  position: relative;
+}
+
+/* Right-hand panel over the blue side. The dark glass backing keeps white
+   text above AA wherever the gradient sits behind it. */
+.hero-aside {
+  grid-column: aside-start / content-end;
+  grid-row: 2 / 4;
+  align-self: start;
+  margin-left: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-on-red-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-hero-glass);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: var(--color-white);
+}
+
+.aside-title {
+  margin: 0 0 0.875rem;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.aside-areas {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.aside-areas li {
+  padding: 0.3rem 0.75rem;
+  border: 1px solid var(--color-on-red-line);
+  border-radius: 999px;
+  font-size: 0.875rem;
+}
+
+.aside-note {
+  margin: 1.25rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-on-red-line);
+  font-size: 0.875rem;
+  color: var(--color-on-red);
+}
+
+.aside-note strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--color-white);
+}
+
+/* Wide screens: headline on one line, sized to the space available. */
+@media (min-width: 1101px) {
+  .hero-stage .hero-msg {
+    max-width: none;
+  }
+
+  .hero-msg .home-hero-title {
+    font-size: min(3.1rem, calc((100vw - 208px) / 19));
+    white-space: nowrap;
+  }
+}
+
+.hero-red::before {
+  width: 38rem;
+  height: 38rem;
+  top: -45%;
+  right: -12%;
+}
+
+.hero-red::after {
+  width: 22rem;
+  height: 22rem;
+  bottom: -40%;
+  left: 62%;
+  background: var(--color-hero-circle-soft);
+}
+
+.hero-msg {
+  grid-column: red-start / content-end;
+  grid-row: 1;
+  max-width: 72%;
+  padding: 2.5rem 2.5rem 1.75rem 3rem;
+  color: var(--color-white);
+}
+
+.home-hero-kicker {
+  margin-bottom: 0.625rem;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-on-red);
+}
+
+/* Never more than two lines: measured at 360, 768, 1024 and 1440.
+   balance stops "Brisbane" being stranded alone. */
+.home-hero-title {
+  margin-bottom: 0.875rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.625rem, 0.5rem + 3.4vw, 3.6rem);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+  color: var(--color-white);
+  text-wrap: balance;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.home-hero-sub {
+  max-width: 36rem;
+  margin: 0;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  color: var(--color-on-red);
+}
+
+/* Price and call, beside the top of the form. */
+.hero-offer {
+  grid-column: form-end / aside-start;
+  grid-row: 2;
+  align-self: start;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.875rem 1.25rem;
+  max-width: 23.5rem;
+  padding: 0 0 1.25rem 2.5rem;
+  color: var(--color-white);
+}
+
+.offer-price {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.25rem 1rem 1.1rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-red);
+}
+
+.offer-price p {
+  margin: 0;
+}
+
+.offer-figure {
+  font-family: var(--font-display);
+  font-size: 3.25rem;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.035em;
+  font-variant-numeric: tabular-nums;
+}
+
+.offer-label {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.offer-label .offer-note {
+  font-family: var(--font-body);
+  font-size: 0.8125rem;
+  font-weight: 400;
+}
+
+/* Bright red on red is low contrast, so the button carries a warm-white
+   ring to separate it from the panel. */
+.btn-on-red {
+  box-shadow: 0 0 0 2px var(--color-paper), var(--shadow-call);
+}
+
+.btn-on-red:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 4px;
+}
+
+.offer-status {
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-on-red);
+}
+
+/* Terms under the price, beside the form. */
+.hero-terms {
+  grid-column: form-end / aside-start;
+  grid-row: 3;
+  align-self: start;
+  list-style: none;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: 2rem;
+  max-width: 19rem;
+  padding: 0.25rem 0 1.5rem 2.5rem;
+}
+
+.hero-terms li {
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--color-on-red-line);
+  font-size: 1rem;
+  line-height: 1.35;
+  color: var(--color-on-red);
+}
+
+.hero-terms strong {
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--color-white);
+}
+
+/* Quote form: overlaps the panel's left and bottom edges. */
+.hero-form {
+  grid-column: content-start / form-end;
+  grid-row: 2 / 5;
+  align-self: start;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.25rem 1.5rem 1rem;
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  box-shadow: var(--shadow-form);
+  color: var(--color-ink);
+}
+
+.form-head h2 {
+  font-size: 1.375rem;
+  line-height: 1.15;
+  color: var(--color-ink);
+}
+
+.form-head p,
+.form-proof {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-warm-600);
+}
+
+.form-head p {
+  margin-top: 0.15rem;
+  font-weight: 500;
+  color: var(--color-red-deep);
+}
+
+.form-proof-end {
+  text-align: center;
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-warm-700);
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--color-warm-200);
+  border-radius: var(--radius-md);
+  background: var(--color-white);
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 400;
+  color: var(--color-ink);
+}
+
+.field textarea {
+  resize: vertical;
+  min-height: 3.5rem;
+}
+
+.field ::placeholder {
+  color: var(--color-warm-600);
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: 2px solid var(--color-red);
+  outline-offset: 0;
+  border-color: transparent;
+}
+
+.form-submit {
+  width: 100%;
+  margin-top: 0.2rem;
+  padding: 0.8rem 1rem;
+}
+
+.form-submit:focus-visible {
+  outline: 2px solid var(--color-red-deep);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1100px) {
+  .home-hero {
+    --hero-overhang: 2rem;
+    --hero-form: 20rem;
+  }
+
+  .hero-msg {
+    padding-left: 2.5rem;
+  }
+
+  .hero-offer {
+    padding-left: 2rem;
+  }
+
+  .hero-terms {
+    max-width: 16rem;
+    padding-left: 2rem;
+  }
+
+  .hero-aside {
+    display: none;
+  }
+}
+
+/* Stacked: panel full width, form below it with no overlap. */
+@media (max-width: 860px) {
+  .home-hero {
+    padding: 1rem 0 2.5rem;
+  }
+
+  .hero-stage {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto auto 4.5rem auto;
+  }
+
+  .hero-red {
+    grid-column: 1;
+    grid-row: 1 / 5;
+    border-radius: 0;
+  }
+
+  .hero-red::before,
+  .hero-red::after {
+    display: none;
+  }
+
+  .hero-msg {
+    grid-column: 1;
+    grid-row: 1;
+    max-width: none;
+    padding: 2.25rem 1.5rem 1.5rem;
+  }
+
+  .hero-offer {
+    grid-column: 1;
+    grid-row: 2;
+    max-width: none;
+    padding: 0 1.5rem 1.5rem;
+  }
+
+  .hero-terms {
+    grid-column: 1;
+    grid-row: 3;
+    max-width: none;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0 1.5rem;
+  }
+
+  .hero-form {
+    grid-column: 1;
+    grid-row: 5;
+    margin: 1.5rem 1.5rem 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .home-hero-sub {
+    font-size: 1.0625rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .hero-offer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .offer-figure {
+    font-size: 3rem;
+  }
+
+  .hero-terms,
+  .field-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* "Not sure what's wrong?" diagnostic, light warm section. */
+.diagnose {
+  background: var(--color-warm-50);
+  padding: 5.5rem 0;
+  border-bottom: 1px solid var(--color-warm-100);
+}
+
+.diagnose h2 {
+  margin-bottom: 0.75rem;
+  color: var(--color-ink);
+}
+
+.diagnose-lead {
+  max-width: 36rem;
+  margin-bottom: 2.5rem;
+  font-size: 1.0625rem;
+  color: var(--color-warm-700);
+}
+
+.diagnose-grid {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-auto-rows: 1fr;
+  gap: 1rem;
+}
+
+.diagnose-tile {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  height: 100%;
+  padding: 1.375rem 1.5rem;
+  border: 1px solid var(--color-warm-200);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+  font-family: var(--font-display);
+  font-size: 1.1875rem;
+  font-weight: 600;
+  color: var(--color-ink);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.diagnose-tile:hover {
+  color: var(--color-ink);
+  border-color: var(--color-warm-300);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-tile);
+}
+
+.diagnose-tile[aria-expanded="true"] {
+  border-color: var(--color-red);
+}
+
+.diagnose-tile:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 3px;
+}
+
+.diagnose-plus {
+  font-size: 1.625rem;
+  font-weight: 600;
+  line-height: 1;
+  color: var(--color-red);
+  transition: transform 0.2s ease;
+}
+
+.diagnose-tile[aria-expanded="true"] .diagnose-plus {
+  transform: rotate(45deg);
+}
+
+.diagnose-panel {
+  margin-top: 1rem;
+  padding: 2.25rem 2.5rem;
+  border: 1px solid var(--color-warm-200);
+  border-radius: var(--radius-lg);
+  background: var(--color-white);
+}
+
+.diagnose-answer {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: 3rem;
+  animation: diagnose-in 0.25s ease both;
+}
+
+.diagnose-answer[hidden] {
+  display: none;
+}
+
+@keyframes diagnose-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+.diagnose-label {
+  margin-bottom: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-warm-700);
+}
+
+.diagnose-text {
+  font-family: var(--font-display);
+  font-size: 1.625rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+}
+
+.diagnose-text:focus {
+  outline: none;
+}
+
+.diagnose-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.diagnose-side dl {
+  align-self: stretch;
+}
+
+.diagnose-side dl > div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--color-warm-100);
+}
+
+.diagnose-side dt {
+  color: var(--color-warm-700);
+}
+
+.diagnose-side dd {
+  font-weight: 500;
+  text-align: right;
+  color: var(--color-ink);
+}
+
+.link-quote {
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 6px;
+  transition: text-decoration-color 0.2s ease;
+}
+
+.link-quote:hover {
+  text-decoration-color: var(--color-red);
+}
+
+.diagnose-side .link-quote {
+  color: var(--color-ink);
+  text-decoration-color: var(--color-warm-300);
+}
+
+.diagnose-small {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--color-warm-700);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .diagnose-tile,
+  .diagnose-tile:hover,
+  .diagnose-plus {
+    transform: none;
+    transition: none;
+  }
+
+  .diagnose-tile[aria-expanded="true"] .diagnose-plus {
+    transform: rotate(45deg);
+  }
+
+  .diagnose-answer {
+    animation: none;
+  }
+}
+
+@media (max-width: 960px) {
+  .site-header .wrap {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .site-nav {
+    display: none;
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+  }
+
+  .nav-mobile:not([hidden]) {
+    display: flex;
+  }
+
+  .diagnose-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .diagnose-answer {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .utility-bar,
+  .header-call {
+    display: none;
+  }
+
+  .nav-mobile {
+    padding-inline: 1.5rem;
+  }
+
+  /* Keep the footer clear of the fixed call bar. */
+  body {
+    padding-bottom: calc(3.5rem + env(safe-area-inset-bottom));
+  }
+
+  .mobile-call-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-sm);
+    position: fixed;
+    inset: auto 0 0 0;
+    z-index: 100;
+    padding: 0.875rem var(--spacing-md) calc(0.875rem + env(safe-area-inset-bottom));
+    background: var(--color-red);
+    color: var(--color-white);
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    box-shadow: var(--shadow-call-bar);
+  }
+
+  .mobile-call-bar:hover {
+    color: var(--color-white);
+    background: var(--color-red-dark);
+  }
+
+  .mobile-call-bar:focus-visible {
+    outline: 2px solid var(--color-red-deep);
+    outline-offset: -4px;
+  }
+
+  .diagnose {
+    padding: 4rem 0;
+  }
+
+  .diagnose-panel {
+    padding: 1.75rem 1.5rem;
+  }
+
+  .diagnose-text {
+    font-size: 1.375rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .brand .tagline {
+    display: none;
+  }
+
+  .brand .word {
+    font-size: 1.0625rem;
+    white-space: nowrap;
+  }
+
+  .diagnose-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* Intro strip */
 .intro {
-  background: var(--color-gray-50);
-  border-bottom: 1px solid var(--color-gray-200);
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-warm-100);
   padding: 2rem 3rem;
 }
 
 .intro p {
   margin: 0;
   text-align: center;
-  color: var(--color-gray-600);
+  color: var(--color-warm-700);
   font-size: 1.0625rem;
   max-width: 820px;
   margin-inline: auto;
@@ -469,6 +1405,11 @@ nav a:hover {
   opacity: 0.95;
 }
 
+.cta-banner .cta-note {
+  font-size: 0.9375rem;
+  margin: 1.25rem 0 0;
+}
+
 /* Footer */
 .site-footer {
   background: var(--color-gray-900);
@@ -510,10 +1451,6 @@ nav a:hover {
 @media (max-width: 768px) {
   h1 { font-size: 2.5rem; }
   h2 { font-size: 2rem; }
-
-  nav {
-    display: none;
-  }
 
   .hero {
     padding: 4rem 2rem;

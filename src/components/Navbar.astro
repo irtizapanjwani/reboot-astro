@@ -1,0 +1,127 @@
+---
+// Site-wide navbar for pages using Layout.astro. Styles live in global.css
+// under "Navbar". The phone number comes from config so it has one home.
+import { business } from '../config/business';
+import PhoneMark from './PhoneMark.astro';
+
+const links = [
+  { href: '/', label: 'Home' },
+  { href: '/services/', label: 'Services' },
+  { href: '/about/', label: 'About' },
+  { href: '/contact/', label: 'Contact' },
+];
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+
+<div class="utility-bar">
+  <div class="wrap">
+    <p>Open 7 days, 7AM&ndash;10PM</p>
+    <p>Servicing Greater Brisbane</p>
+  </div>
+</div>
+
+<header class="site-header" id="site-header">
+  <div class="wrap">
+    <a href="/" class="brand">
+      <span class="word">Reboot Your Computer</span>
+      <span class="tagline">Fast Repairs Brisbane</span>
+    </a>
+
+    <nav class="site-nav" aria-label="Main">
+      {links.map((link) => (
+        <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>{link.label}</a>
+      ))}
+    </nav>
+
+    <div class="header-actions">
+      <a href={business.phoneHref} class="btn btn-call btn-call-sm header-call">
+        <PhoneMark />
+        <span>{business.phone}</span>
+      </a>
+      <button
+        type="button"
+        class="nav-toggle"
+        id="nav-toggle"
+        aria-controls="nav-mobile"
+        aria-expanded="false"
+        aria-label="Open menu"
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+          <path class="nav-toggle-open" stroke-linecap="round" d="M4 7h16M4 12h16M4 17h11"/>
+          <path class="nav-toggle-close" stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <nav class="nav-mobile" id="nav-mobile" aria-label="Main" hidden>
+    {links.map((link) => (
+      <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>{link.label}</a>
+    ))}
+  </nav>
+</header>
+
+<!-- Mobile only: always-visible call button pinned to the bottom of the viewport. -->
+<a href={business.phoneHref} class="mobile-call-bar">
+  <PhoneMark />
+  <span>Call now &middot; {business.phone}</span>
+</a>
+
+<script>
+  const header = document.getElementById('site-header');
+  const toggle = document.getElementById('nav-toggle');
+  const menu = document.getElementById('nav-mobile');
+
+  // Solid with a shadow only once the page has scrolled.
+  const onScroll = () => header?.classList.toggle('is-scrolled', window.scrollY > 4);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  const setOpen = (open: boolean) => {
+    if (!toggle || !menu) return;
+    menu.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  };
+
+  toggle?.addEventListener('click', () => setOpen(menu?.hidden ?? false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+
+  // Live open/closed status in Brisbane time (no daylight saving, so the
+  // hour from Intl is reliable). Every element with data-open-status on the
+  // page is updated (currently the rate card in the homepage hero). Without
+  // JS these stay hidden rather than showing a status we can't vouch for.
+  const toMinutes = (hhmm: string) => {
+    const [h, m] = hhmm.split(':').map(Number);
+    return h * 60 + m;
+  };
+  const label = (hhmm: string) => {
+    const h = Number(hhmm.split(':')[0]);
+    return `${h % 12 || 12}${h < 12 ? 'AM' : 'PM'}`;
+  };
+  const parts = new Intl.DateTimeFormat('en-AU', {
+    timeZone: 'Australia/Brisbane',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date());
+  const now = Number(parts.find((p) => p.type === 'hour')?.value) * 60
+    + Number(parts.find((p) => p.type === 'minute')?.value);
+
+  document.querySelectorAll<HTMLElement>('[data-open-status]').forEach((el) => {
+    const opens = el.dataset.opens ?? '07:00';
+    const closes = el.dataset.closes ?? '22:00';
+    const open = now >= toMinutes(opens) && now < toMinutes(closes);
+    const text = el.querySelector('[data-open-text]');
+    el.classList.add(open ? 'is-open' : 'is-closed');
+    if (text) {
+      text.textContent = open
+        ? `Open now, until ${label(closes)}`
+        : `Closed, opens ${label(opens)}${now >= toMinutes(closes) ? ' tomorrow' : ''}`;
+    }
+  });
+</script>

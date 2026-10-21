@@ -2,6 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 import { business } from '../config/business';
 import home from '../content/home/index.json';
+import PhoneMark from '../components/PhoneMark.astro';
 
 // Metadata mirrors the live WordPress homepage exactly — see SEO-BASELINE.md.
 // This page ranks position 8.7 for "computer repairs brisbane"; do not change
@@ -58,17 +59,140 @@ const pricing = [
   },
 ];
 
+// "Not sure what's wrong?" section. `fallback` is where each tile links when
+// JS is off: the matching "What We Fix" card.
+//
+// TODO: cause, price and time are PLACEHOLDER copy. Replace with the client's
+// real figures before launch. Prices must stay consistent with the hourly
+// rates in src/config/business.ts.
+const symptoms = [
+  {
+    slug: 'wont-turn-on', label: "Won't turn on", fallback: '#service-laptop-mac-hardware',
+    cause: 'Usually a dead charger, battery or power supply. Less often, the motherboard.',
+    price: '$150–$350', time: 'Same visit, or 1–2 days if a part is needed',
+  },
+  {
+    slug: 'slow', label: 'Running slow', fallback: '#what-we-fix',
+    cause: 'A full or failing drive, too much starting up with Windows, or something running in the background.',
+    price: '$150–$250', time: '1–2 hours',
+  },
+  {
+    slug: 'virus', label: 'Virus or pop-ups', fallback: '#service-virus-malware',
+    cause: 'Adware or malware, usually from a fake download, email link or browser extension.',
+    price: '$150–$225', time: '1–2 hours',
+  },
+  {
+    slug: 'screen', label: 'Broken screen', fallback: '#service-laptop-mac-hardware',
+    cause: 'A cracked or failed panel. We confirm the exact part for your model, then order it in.',
+    price: '$200–$450', time: '1–3 days, depending on the part',
+  },
+  {
+    slug: 'data', label: 'Lost files', fallback: '#service-data-recovery',
+    cause: 'Accidental deletion or a failing drive. Stop using the machine now. Every use lowers the odds.',
+    price: '$150–$600', time: 'Same day to a week',
+  },
+  {
+    slug: 'internet', label: 'Wi-Fi & internet', fallback: '#what-we-fix',
+    cause: 'Usually router placement, settings or an out-of-date network driver, not your internet plan.',
+    price: '$150–$190', time: 'About an hour',
+  },
+];
+
+// Anchor ids for the "What We Fix" cards, so the no-JS keycaps have somewhere to land.
+const serviceId = (title: string) =>
+  'service-' + title.toLowerCase().replace(/&/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+
+// "first hour, then $37.50 per 15 minutes" -> "then $37.50 per 15 minutes"
+const onsiteAfter = business.rates.onsite.unit.replace(/^first hour,\s*/, '');
+
 ---
 
 <Layout title={seoTitle} description={seoDescription}>
-  <section class="hero">
-    <div class="hero-content">
-      <h1>Computer Repairs Brisbane</h1>
-      <p>{home.heroBody}</p>
-      <div class="hero-actions">
-        <a href="/contact/" class="btn btn-primary">Get a Quote</a>
-        <a href="/services/" class="btn btn-secondary">What We Fix</a>
+  <section class="home-hero">
+    <div class="hero-stage">
+      <div class="hero-red" aria-hidden="true"></div>
+
+      <div class="hero-msg">
+        <!-- The H1 is locked to "Computer Repairs Brisbane" (SEO-BASELINE.md). -->
+        <h1 class="home-hero-kicker">Computer Repairs Brisbane</h1>
+        <p class="home-hero-title"><span class="nowrap">On-site</span> computer repairs across Brisbane</p>
+        <p class="home-hero-sub">Expert PC, Mac and laptop repairs at your home or office. Open every day, 7AM to 10PM.</p>
       </div>
+
+      <div class="hero-offer">
+        <div class="offer-price">
+          <p class="offer-figure">{business.rates.onsite.price}</p>
+          <p class="offer-label">first hour, <span class="nowrap">on-site</span><br /><span class="offer-note">{onsiteAfter}</span></p>
+        </div>
+        <a href={business.phoneHref} class="btn btn-call btn-call-lg btn-on-red">
+          <PhoneMark />
+          <span>{business.phone}</span>
+        </a>
+        <p class="offer-status" data-open-status data-opens={business.hours.opens} data-closes={business.hours.closes}>
+          <span data-open-text></span>
+        </p>
+      </div>
+
+      <!-- All four are claims the live site already makes (pricing tiers, Why Us). -->
+      <ul class="hero-terms">
+        <li><strong>$0</strong> call-out fee</li>
+        <li><strong>No fix,</strong> no fee</li>
+        <li><strong>No surcharge</strong> on weekends, holidays or late nights</li>
+        <li><strong>Most repairs</strong> done within the hour</li>
+      </ul>
+
+      <!-- Right-hand panel: real facts from config and the Why Us copy. -->
+      <aside class="hero-aside" aria-label="Where we work">
+        <p class="aside-title">We come to you</p>
+        <ul class="aside-areas">
+          {business.areasServed.map((area) => <li>{area}</li>)}
+        </ul>
+        <p class="aside-note"><strong>As seen on Channel 9</strong>Interviewed about slow internet speeds around Brisbane.</p>
+      </aside>
+
+      <!-- Posts to Web3Forms, same as the contact page; ?sent=1 shows its thank-you state. -->
+      <form class="hero-form" action={business.formAction} method="POST" aria-labelledby="hero-form-title">
+        <input type="hidden" name="access_key" value={business.web3formsAccessKey} />
+        <input type="hidden" name="subject" value="Quote request (homepage) — rebootyourcomputer.com.au" />
+        <input type="hidden" name="redirect" value="https://www.rebootyourcomputer.com.au/contact/?sent=1" />
+        <input type="checkbox" name="botcheck" tabindex="-1" autocomplete="off" hidden />
+
+        <div class="form-head">
+          <h2 id="hero-form-title">Get a free quote</h2>
+          <!-- TODO: confirm reply time with the client. -->
+          <p>Usually replies within 15 minutes</p>
+        </div>
+        <!-- TODO: confirm with the client. -->
+        <p class="form-proof">Takes 30 seconds &middot; No obligation</p>
+
+        <div class="field-row">
+          <label class="field">
+            <span>Name</span>
+            <input name="name" type="text" autocomplete="name" required maxlength="100" />
+          </label>
+          <label class="field">
+            <span>Phone</span>
+            <input name="phone" type="tel" autocomplete="tel" required maxlength="40" />
+          </label>
+        </div>
+        <label class="field">
+          <span>Suburb</span>
+          <select name="suburb" required>
+            <option value="" disabled selected>Choose your area</option>
+            {business.areasServed.map((area) => <option>{area}</option>)}
+            <option>Somewhere else</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>What&rsquo;s the problem?</span>
+          <textarea name="message" rows="2" required maxlength="4000" placeholder="Won't turn on after a drink spill"></textarea>
+        </label>
+
+        <button type="submit" class="btn btn-call form-submit">Get my free quote</button>
+        <!-- TODO: confirm warranty terms with the client before launch. -->
+        <p class="form-proof form-proof-end">1-year warranty on all repairs</p>
+      </form>
     </div>
   </section>
 
@@ -78,12 +202,94 @@ const pricing = [
     </div>
   </section>
 
-  <section class="services">
+  <section class="diagnose" id="diagnose">
+    <div class="wrap">
+      <h2>Not sure what&rsquo;s wrong?</h2>
+      <p class="diagnose-lead">Pick what you&rsquo;re seeing. We&rsquo;ll tell you the likely cause, roughly what it costs and how long it takes.</p>
+
+      <ul class="diagnose-grid">
+        {symptoms.map((sym) => (
+          <li>
+            <a href={sym.fallback} class="diagnose-tile" data-symptom={sym.slug}>
+              <span>{sym.label}</span>
+              <span class="diagnose-plus" aria-hidden="true">+</span>
+            </a>
+          </li>
+        ))}
+      </ul>
+
+      <div class="diagnose-panel" id="diagnose-panel" hidden>
+        {symptoms.map((sym) => (
+          <div class="diagnose-answer" data-answer={sym.slug} hidden>
+            <div class="diagnose-cause">
+              <p class="diagnose-label">Likely cause: {sym.label.toLowerCase()}</p>
+              <p class="diagnose-text" tabindex="-1">{sym.cause}</p>
+            </div>
+            <div class="diagnose-side">
+              <dl>
+                <div><dt>Typical cost</dt><dd>{sym.price}</dd></div>
+                <div><dt>Typical turnaround</dt><dd>{sym.time}</dd></div>
+              </dl>
+              <a href={business.phoneHref} class="btn btn-call">
+                <PhoneMark />
+                <span>{business.phone}</span>
+              </a>
+              <a href={`/contact/?issue=${sym.slug}`} class="link-quote">Get a free quote</a>
+              <p class="diagnose-small">Estimate only. We confirm the price before any work starts.</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Without JS the tiles are plain links to the "What We Fix" cards. With JS
+    // they open the matching answer in the panel under the grid.
+    const panel = document.getElementById('diagnose-panel');
+    const tiles = Array.from(document.querySelectorAll<HTMLAnchorElement>('.diagnose-tile'));
+    const answers = Array.from(document.querySelectorAll<HTMLElement>('.diagnose-answer'));
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    tiles.forEach((tile) => {
+      tile.setAttribute('role', 'button');
+      tile.setAttribute('aria-expanded', 'false');
+      tile.setAttribute('aria-controls', 'diagnose-panel');
+
+      tile.addEventListener('click', (e) => {
+        e.preventDefault();
+        const slug = tile.dataset.symptom;
+        const closing = tile.getAttribute('aria-expanded') === 'true';
+
+        tiles.forEach((t) => t.setAttribute('aria-expanded', String(!closing && t === tile)));
+        answers.forEach((a) => (a.hidden = closing || a.dataset.answer !== slug));
+        if (!panel) return;
+        panel.hidden = closing;
+        if (closing) return;
+
+        const answer = answers.find((a) => a.dataset.answer === slug);
+        answer?.querySelector<HTMLElement>('.diagnose-text')?.focus({ preventScroll: true });
+        if (panel.getBoundingClientRect().bottom > window.innerHeight) {
+          panel.scrollIntoView({ behavior: reduce.matches ? 'auto' : 'smooth', block: 'nearest' });
+        }
+      });
+
+      // Space should press a role=button link too.
+      tile.addEventListener('keydown', (e) => {
+        if (e.key === ' ') {
+          e.preventDefault();
+          tile.click();
+        }
+      });
+    });
+  </script>
+
+  <section class="services" id="what-we-fix">
     <div class="wrap">
       <h2>What We Fix</h2>
       <div class="services-grid">
         {home.services.map((service) => (
-          <div class="service-card">
+          <div class="service-card" id={serviceId(service.title)}>
             <h3>{service.icon} {service.title}</h3>
             <p>{service.body}</p>
           </div>
@@ -133,6 +339,7 @@ const pricing = [
       <h2>{home.ctaHeading}</h2>
       <p>{home.ctaBody}</p>
       <a href="/contact/" class="btn btn-secondary cta-invert">Contact Us</a>
+      <p class="cta-note">We don't currently cover the Sunshine Coast.</p>
     </div>
   </section>
 </Layout>
