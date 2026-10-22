@@ -1,0 +1,158 @@
+---
+// The client's original homepage (as at commit 776c09e), kept for comparison
+// with light improvements only:
+//  - phone number in the hero as the main action (the old page had none above the fold)
+//  - buttons that pointed at the now-removed Contact/Services pages call or scroll instead
+//  - the service-area strip leads positively; the Sunshine Coast note moves to the closing banner
+//  - the "Best value" on-site tier is highlighted
+// It is a preview page: noindex, and left out of the sitemap (astro.config.mjs),
+// because it repeats the real homepage's H1 and content.
+import Layout from '../layouts/Layout.astro';
+import { business } from '../config/business';
+import home from '../content/home/index.json';
+import { serviceMark } from '../data/service-marks';
+
+const pricing = [
+  {
+    name: 'Workshop Repairs',
+    note: 'Open 7 AM to 10 PM',
+    price: business.rates.workshop.price,
+    unit: business.rates.workshop.unit,
+    points: [
+      'No call out fees',
+      'No hidden charges',
+      'No fix, no fee',
+      'Fix any computer problem',
+      'Most repairs are done in 1 hour',
+      'Expert technical support',
+    ],
+  },
+  {
+    name: 'On Site Service',
+    note: 'Best value',
+    featured: true,
+    price: business.rates.onsite.price,
+    unit: business.rates.onsite.unit,
+    points: [
+      'No call out fees',
+      'No travel fees',
+      'No hidden charges',
+      'No fix, no fee',
+      'Fix any computer problem',
+      'Most repairs are done in 1 hour',
+      'Expert technical support',
+    ],
+  },
+  {
+    name: 'Remote Service',
+    note: 'For easy to fix PC problems',
+    price: business.rates.remote.price,
+    unit: business.rates.remote.unit,
+    points: [
+      'No call out fees',
+      'No hidden charges',
+      'Download special software',
+      'Fix computer problems remotely',
+      'Most repairs are done in 1 hour',
+      'Expert technical support',
+    ],
+  },
+];
+---
+
+<Layout
+  title="Reboot Computer Repairs Brisbane (original homepage)"
+  description="The original Reboot Computer Repairs homepage, kept for comparison."
+  noindex
+  legacy
+>
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Computer Repairs Brisbane</h1>
+      <p>{home.heroBody}</p>
+      <div class="hero-actions">
+        <a href={business.phoneHref} class="btn btn-primary">Call {business.phone}</a>
+        <a href="#what-we-fix" class="btn btn-secondary">What We Fix</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="intro">
+    <div class="wrap">
+      <p>{home.introBody}</p>
+    </div>
+  </section>
+
+  <section class="services" id="what-we-fix">
+    <div class="wrap">
+      <h2>What We Fix</h2>
+      <p class="services-lead">PCs, Macs and laptops, at your place or ours. If we can&rsquo;t fix it, you don&rsquo;t pay.</p>
+      <div class="services-grid">
+        {home.services.map((service) => (
+          <div class="service-card">
+            <div class="service-card-head">
+              <span class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d={serviceMark(service.title)} /></svg>
+              </span>
+              <h3>{service.title}</h3>
+            </div>
+            <div class="service-card-body">
+              <p>{service.body}</p>
+              {service.points?.length > 0 && (
+                <ul class="service-points">
+                  {service.points.slice(0, 3).map((point) => <li>{point}</li>)}
+                </ul>
+              )}
+              <a href={business.phoneHref} class="service-link">Call about this <span aria-hidden="true">&rarr;</span></a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="pricing">
+    <div class="wrap">
+      <h2>We're Competitive On Our Pricing</h2>
+      <p class="pricing-lead">
+        You choose the time and date. Weekends, public holidays and late nights, with no extra surcharges.
+      </p>
+      <div class="pricing-grid">
+        {pricing.map((tier) => (
+          <div class:list={['pricing-card', { 'is-best': tier.featured }]}>
+            <h3>{tier.name}</h3>
+            <p class="pricing-note">{tier.note}</p>
+            <p class="pricing-price"><strong>{tier.price}</strong> <span>{tier.unit}</span></p>
+            <ul>
+              {tier.points.map((point) => <li>{point}</li>)}
+            </ul>
+            <a href={business.phoneHref} class="btn btn-primary">Call to book</a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="why-us">
+    <div class="wrap">
+      <h2>Why Choose Reboot?</h2>
+      <div class="why-us-grid">
+        {home.whyUs.map((item) => (
+          <div class="why-us-item">
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-banner">
+    <div class="wrap">
+      <h2>{home.ctaHeading}</h2>
+      <p>{home.ctaBody}</p>
+      <a href={business.phoneHref} class="btn btn-secondary cta-invert">Call {business.phone}</a>
+      <p class="cta-note">We don't currently cover the Sunshine Coast.</p>
+    </div>
+  </section>
+</Layout>

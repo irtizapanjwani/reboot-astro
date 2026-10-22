@@ -15,7 +15,8 @@ export default defineConfig({
   integrations: [
     sitemap({
       // The 404 page has no business in a sitemap.
-      filter: (page) => !page.includes('/404'),
+      // /home-old/ is a client preview of the original homepage (noindex).
+      filter: (page) => !page.includes('/404') && !page.includes('/home-old'),
       changefreq: 'weekly',
       lastmod: new Date(),
     }),

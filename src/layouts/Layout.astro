@@ -3,15 +3,24 @@ import '@fontsource/archivo/600.css';
 import '@fontsource/archivo/700.css';
 import '@fontsource/public-sans/400.css';
 import '@fontsource/public-sans/500.css';
+import '@fontsource/schibsted-grotesk/400.css';
+import '@fontsource/schibsted-grotesk/500.css';
+import '@fontsource/schibsted-grotesk/700.css';
 import '../styles/global.css';
 import { business } from '../config/business';
 import Navbar from '../components/Navbar.astro';
 import SiteFooter from '../components/SiteFooter.astro';
+import OldHeader from '../components/OldHeader.astro';
+import OldFooter from '../components/OldFooter.astro';
 
 interface Props {
   title?: string;
   description?: string;
   canonical?: string;
+  // Preview pages (e.g. /home-old/) stay out of search results.
+  noindex?: boolean;
+  // The original site's header and footer, for /home-old/.
+  legacy?: boolean;
 }
 
 const SITE = business.site;
@@ -20,6 +29,8 @@ const {
   title = 'Reboot Computer Repairs',
   description = 'Computer repairs in Brisbane. Open 7 AM to 10 PM every day, no call out fees.',
   canonical = new URL(Astro.url.pathname, SITE).href,
+  noindex = false,
+  legacy = false,
 } = Astro.props;
 
 // The live WordPress site emits Person schema, which is wrong for a local service
@@ -66,17 +77,17 @@ const localBusinessSchema = {
     <meta property="og:type" content="website">
     <meta property="og:url" content={canonical}>
     <meta property="og:locale" content="en_AU">
-    <meta name="robots" content="index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large">
+    <meta name="robots" content={noindex ? 'noindex, nofollow' : 'index, follow, max-snippet:-1, max-video-preview:-1, max-image-preview:large'}>
     <link rel="canonical" href={canonical}>
     <script type="application/ld+json" set:html={JSON.stringify(localBusinessSchema)} />
   </head>
-  <body>
-    <Navbar />
+  <body class:list={{ 'is-legacy': legacy }}>
+    {legacy ? <OldHeader /> : <Navbar />}
 
     <main>
       <slot />
     </main>
 
-    <SiteFooter />
+    {legacy ? <OldFooter /> : <SiteFooter />}
   </body>
 </html>

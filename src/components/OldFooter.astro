@@ -1,0 +1,77 @@
+---
+// The original site footer (as at commit 776c09e), used only on /home-old/.
+// Links to pages that no longer exist are plain or disabled text; the phone
+// number replaces the old link to the removed contact page.
+import { business } from '../config/business';
+---
+
+<footer class="old-footer">
+  <div class="wrap">
+    <div class="old-footer-content">
+      <div class="old-footer-section">
+        <h4>Contact</h4>
+        <p>Phone: <a href={business.phoneHref}>{business.phone}</a></p>
+        <p>Email: <a href={`mailto:${business.email}`}>{business.email}</a></p>
+      </div>
+      <div class="old-footer-section">
+        <h4>Services</h4>
+        <p>Virus &amp; Malware Removal</p>
+        <p>Data Recovery</p>
+        <p>Hardware Repair</p>
+        <p>Computer Setup</p>
+      </div>
+      <div class="old-footer-section">
+        <h4>Company</h4>
+        <p><a class="is-disabled" aria-disabled="true">About Us</a></p>
+        <p><a class="is-disabled" aria-disabled="true">Contact</a></p>
+        <p><a class="is-disabled" aria-disabled="true">Privacy Policy</a></p>
+      </div>
+    </div>
+    <div class="old-footer-bottom">
+      <p>&copy; {new Date().getFullYear()} Reboot Computer Repairs. Brisbane, Australia.</p>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .old-footer {
+    background: var(--color-gray-900);
+    color: var(--color-white);
+    padding: 4rem 0 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .old-footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .old-footer-section h4 {
+    margin-bottom: 1rem;
+    color: var(--color-white);
+  }
+
+  .old-footer-section p,
+  .old-footer-section a {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.95rem;
+  }
+
+  .old-footer-section a:not(.is-disabled):hover {
+    color: var(--color-red-light);
+  }
+
+  .old-footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.9rem;
+  }
+
+  .old-footer-bottom p {
+    margin: 0;
+  }
+</style>

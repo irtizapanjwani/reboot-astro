@@ -3,10 +3,20 @@
 // under "Navbar". The phone number comes from config so it has one home.
 import { business } from '../config/business';
 import PhoneMark from './PhoneMark.astro';
+import { serviceGroups, serviceCount } from '../data/service-groups';
+import { markPath } from '../data/service-marks';
 
-const links = [
+// The Services dropdown: groups on the left, the group's services in the
+// middle, and the hovered service's description on the right. There are no
+// service pages yet, so services are buttons that show details, not links.
+const [firstService] = serviceGroups[0].services;
+const position = (group: string, i: number, n: number) =>
+  `${group} · ${String(i + 1).padStart(2, '0')} / ${String(n).padStart(2, '0')}`;
+
+const links: { href: string; label: string; menu?: boolean }[] = [
   { href: '/', label: 'Home' },
-  { href: '/services/', label: 'Services' },
+  // /home-old/ is still built and reachable by URL, just not linked here.
+  { href: '/services/', label: 'Services', menu: true },
   { href: '/about/', label: 'About' },
   { href: '/contact/', label: 'Contact' },
 ];
@@ -34,7 +44,61 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
     </a>
 
     <nav class="site-nav" aria-label="Main">
-      {links.map((link) => isLive(link.href) ? (
+      {links.map((link) => link.menu ? (
+        <div class="nav-item has-menu">
+          <button type="button" class="nav-menu-trigger" aria-expanded="false" aria-controls="nav-services">
+            {link.label}
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 4.5l3 3 3-3"/>
+            </svg>
+          </button>
+          <div class="nav-menu" id="nav-services">
+            <div class="nav-menu-panel" data-svc-panel>
+              <div class="svc-rail">
+                <p class="svc-rail-label">{serviceCount} services</p>
+                {serviceGroups.map((group, i) => (
+                  <button type="button" class="svc-tab" data-svc-tab aria-current={i === 0 ? 'true' : undefined}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d={markPath(group.mark)} /></svg>
+                    <span>{group.name}</span>
+                    <span class="svc-tab-count">{group.services.length}</span>
+                  </button>
+                ))}
+              </div>
+
+              {serviceGroups.map((group, i) => (
+                <div class="svc-group" data-svc-group hidden={i !== 0}>
+                  <p class="svc-group-name">{group.name}</p>
+                  <p class="svc-group-blurb">{group.blurb}</p>
+                  <ul class="svc-list">
+                    {group.services.map((service, j) => (
+                      <li>
+                        <button
+                          type="button"
+                          class="svc-item"
+                          data-desc={service.description}
+                          data-pos={position(group.name, j, group.services.length)}
+                          aria-current={i === 0 && j === 0 ? 'true' : undefined}
+                        >{service.title}</button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+
+              <div class="svc-detail" aria-live="polite">
+                <p class="svc-detail-pos" data-svc-pos>{position(serviceGroups[0].name, 0, serviceGroups[0].services.length)}</p>
+                <p class="svc-detail-title" data-svc-title>{firstService.title}</p>
+                <p class="svc-detail-desc" data-svc-desc>{firstService.description}</p>
+                <p class="svc-detail-note">Not sure which one you need? Call and tell us what’s going on.</p>
+                <a href={business.phoneHref} class="btn btn-call btn-call-sm">
+                  <PhoneMark />
+                  <span>{business.phone}</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : isLive(link.href) ? (
         <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>{link.label}</a>
       ) : (
         <a class="is-disabled" aria-disabled="true">{link.label}</a>
@@ -63,7 +127,21 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
   </div>
 
   <nav class="nav-mobile" id="nav-mobile" aria-label="Main" hidden>
-    {links.map((link) => isLive(link.href) ? (
+    {links.map((link) => link.menu ? (
+      <details class="nav-mobile-menu">
+        <summary>{link.label}</summary>
+        <div class="nav-mobile-groups">
+          {serviceGroups.map((group) => (
+            <>
+              <p class="nav-mobile-group">{group.name}</p>
+              <ul>
+                {group.services.map((service) => <li>{service.title}</li>)}
+              </ul>
+            </>
+          ))}
+        </div>
+      </details>
+    ) : isLive(link.href) ? (
       <a href={link.href} aria-current={isCurrent(link.href) ? 'page' : undefined}>{link.label}</a>
     ) : (
       <a class="is-disabled" aria-disabled="true">{link.label}</a>
@@ -96,8 +174,66 @@ const isCurrent = (href: string) => (href === '/' ? path === '/' : path.startsWi
 
   toggle?.addEventListener('click', () => setOpen(menu?.hidden ?? false));
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') setOpen(false);
+    if (e.key === 'Escape') {
+      setOpen(false);
+      // Closes the Services dropdown when it's open from keyboard focus.
+      if (document.activeElement?.closest('.has-menu')) (document.activeElement as HTMLElement).blur();
+    }
   });
+
+  // The Services dropdown opens on hover or focus (CSS); this keeps
+  // aria-expanded in step for screen readers.
+  document.querySelectorAll<HTMLElement>('.has-menu').forEach((item) => {
+    const trigger = item.querySelector('.nav-menu-trigger');
+    const sync = () => {
+      const open = item.matches(':hover') || item.contains(document.activeElement);
+      trigger?.setAttribute('aria-expanded', String(open));
+    };
+    ['mouseenter', 'mouseleave', 'focusin', 'focusout'].forEach((type) =>
+      item.addEventListener(type, () => requestAnimationFrame(sync)));
+  });
+
+  // Inside the dropdown: a group tab swaps the middle list, and a service
+  // fills the detail card with its description.
+  const panel = document.querySelector<HTMLElement>('[data-svc-panel]');
+  if (panel) {
+    const tabs = [...panel.querySelectorAll<HTMLElement>('[data-svc-tab]')];
+    const groups = [...panel.querySelectorAll<HTMLElement>('[data-svc-group]')];
+    const pos = panel.querySelector('[data-svc-pos]');
+    const title = panel.querySelector('[data-svc-title]');
+    const desc = panel.querySelector('[data-svc-desc]');
+
+    const showService = (item: HTMLElement) => {
+      panel.querySelector('.svc-item[aria-current]')?.removeAttribute('aria-current');
+      item.setAttribute('aria-current', 'true');
+      if (pos) pos.textContent = item.dataset.pos ?? '';
+      if (title) title.textContent = item.textContent;
+      if (desc) desc.textContent = item.dataset.desc ?? '';
+    };
+
+    const showGroup = (i: number) => {
+      if (tabs[i]?.hasAttribute('aria-current')) return;
+      tabs.forEach((tab, j) => j === i ? tab.setAttribute('aria-current', 'true') : tab.removeAttribute('aria-current'));
+      groups.forEach((group, j) => { group.hidden = j !== i; });
+      const first = groups[i]?.querySelector<HTMLElement>('.svc-item');
+      if (first) showService(first);
+    };
+
+    // A short hover delay, so cutting across the rail on the way to the
+    // list doesn't flip to whichever group the pointer passes over.
+    let timer: number | undefined;
+    tabs.forEach((tab, i) => {
+      tab.addEventListener('mouseenter', () => { timer = window.setTimeout(() => showGroup(i), 120); });
+      tab.addEventListener('mouseleave', () => window.clearTimeout(timer));
+      tab.addEventListener('focus', () => showGroup(i));
+      tab.addEventListener('click', () => showGroup(i));
+    });
+
+    panel.querySelectorAll<HTMLElement>('.svc-item').forEach((item) => {
+      item.addEventListener('mouseenter', () => showService(item));
+      item.addEventListener('focus', () => showService(item));
+    });
+  }
 
   // Live open/closed status in Brisbane time (no daylight saving, so the
   // hour from Intl is reliable). Every element with data-open-status on the

@@ -51,6 +51,8 @@
      Archivo 600/700 for headings, Public Sans 400/500 for body. */
   --font-display: 'Archivo', system-ui, sans-serif;
   --font-body: 'Public Sans', system-ui, sans-serif;
+  /* Schibsted Grotesk 400/500/700 for the navbar Services dropdown. */
+  --font-menu: 'Schibsted Grotesk', system-ui, sans-serif;
 
   --spacing-xs: 0.25rem;
   --spacing-sm: 0.5rem;
@@ -290,6 +292,15 @@ a:hover {
   padding-block: 0.75rem;
 }
 
+/* The navbar and the bar above it run a little wider than the page content
+   (80rem against 71rem), nudging the logo and call button toward the
+   corners without pushing them right into them. */
+.utility-bar .wrap,
+.site-header .wrap {
+  max-width: none;
+  padding-inline: max(2rem, calc((100% - 80rem) / 2));
+}
+
 .brand {
   display: flex;
   flex-direction: column;
@@ -339,6 +350,251 @@ a:hover {
 .site-nav a[aria-current="page"] {
   color: var(--color-white);
   box-shadow: inset 0 -2px 0 var(--color-white);
+}
+
+/* Services dropdown: every service name, opened on hover or keyboard focus.
+   The panel is centred under the whole nav so it fits at any desktop width. */
+.site-nav {
+  position: relative;
+}
+
+.nav-menu-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.375rem 0;
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-white);
+  cursor: default;
+}
+
+.nav-menu-trigger svg {
+  width: 12px;
+  height: 12px;
+  transition: transform 0.15s ease;
+}
+
+.has-menu:hover .nav-menu-trigger,
+.has-menu:focus-within .nav-menu-trigger {
+  box-shadow: inset 0 -2px 0 var(--color-on-red-line);
+}
+
+.has-menu:hover .nav-menu-trigger svg,
+.has-menu:focus-within .nav-menu-trigger svg {
+  transform: rotate(180deg);
+}
+
+.nav-menu-trigger:focus-visible {
+  outline: 2px solid var(--color-white);
+  outline-offset: 3px;
+}
+
+/* The top padding is a hover bridge across the gap below the header. */
+.nav-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(60rem, calc(100vw - 2rem));
+  padding-top: 1.25rem;
+}
+
+.has-menu:hover .nav-menu,
+.has-menu:focus-within .nav-menu {
+  display: block;
+}
+
+/* Three panes: group rail, the group's services, the hovered service's card.
+   The min-height fits the longest description so the panel doesn't jump. */
+.nav-menu-panel {
+  display: grid;
+  grid-template-columns: 15.5rem minmax(0, 1fr) 17rem;
+  min-height: 28rem;
+  max-height: calc(100vh - 9rem);
+  overflow-y: auto;
+  background: var(--color-white);
+  border: 1px solid var(--color-warm-200);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-form);
+  font-family: var(--font-menu);
+  color: var(--color-ink);
+}
+
+/* :where() keeps this reset at zero specificity, so the .svc-tab and
+   .svc-item sizes and line heights below aren't overridden by it. */
+:where(.nav-menu-panel) button {
+  border: none;
+  background: none;
+  font: inherit;
+  text-align: left;
+}
+
+.nav-menu-panel button:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: -2px;
+}
+
+.svc-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding: 1rem 0.75rem;
+  background: var(--color-warm-50);
+  border-right: 1px solid var(--color-warm-200);
+}
+
+.svc-rail-label,
+.svc-detail-pos {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.svc-rail-label {
+  padding: 0 0.625rem 0.5rem;
+  color: var(--color-warm-600);
+}
+
+.svc-tab {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.625rem;
+  width: 100%;
+  padding: 0.55rem 0.625rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-warm-700);
+  cursor: pointer;
+}
+
+.svc-tab svg {
+  width: 20px;
+  height: 20px;
+  color: var(--color-warm-600);
+}
+
+.svc-tab-count {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-warm-600);
+}
+
+.svc-tab:hover {
+  background: var(--color-warm-100);
+}
+
+.svc-tab[aria-current] {
+  background: var(--color-white);
+  color: var(--color-ink);
+  box-shadow: inset 3px 0 0 var(--color-red), 0 1px 2px rgba(23, 11, 13, 0.08);
+}
+
+.svc-tab[aria-current] svg {
+  color: var(--color-red);
+}
+
+.svc-group {
+  padding: 1.25rem 1.5rem;
+}
+
+.svc-group[hidden] {
+  display: none;
+}
+
+.svc-group-name {
+  margin: 0;
+  font-size: 1.375rem;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+.svc-group-blurb {
+  margin: 0.25rem 0 1rem;
+  font-size: 0.875rem;
+  color: var(--color-warm-600);
+}
+
+.svc-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Services aren't links yet, so no pointer cursor; hover just shows details. */
+.svc-item {
+  width: 100%;
+  padding: 0.4rem 0.625rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9375rem;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--color-ink);
+  cursor: default;
+}
+
+.svc-item[aria-current] {
+  background: var(--color-warm-100);
+  color: var(--color-red-deep);
+  font-weight: 500;
+}
+
+.svc-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem 1.375rem;
+  background: var(--color-bezel);
+  color: var(--color-on-red);
+}
+
+.svc-detail-pos {
+  color: var(--color-warm-300);
+}
+
+.svc-detail-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: var(--color-white);
+}
+
+.svc-detail-desc {
+  flex: 1;
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.svc-detail-note {
+  margin: 0;
+  padding-top: 0.875rem;
+  border-top: 1px solid var(--color-on-red-line);
+  font-size: 0.8125rem;
+  color: var(--color-warm-300);
+}
+
+.svc-detail .btn-call {
+  align-self: flex-start;
+}
+
+.svc-detail .btn:focus-visible {
+  outline-color: var(--color-white);
 }
 
 /* White phone button so it stands out on the red bar. */
@@ -419,6 +675,80 @@ a:hover {
   text-underline-offset: 5px;
 }
 
+/* Services in the mobile menu: tap to expand the list of names. The list
+   scrolls on its own so it can't push the rest of the menu off-screen. */
+.nav-mobile-menu {
+  border-bottom: 1px solid var(--color-on-red-line);
+}
+
+.nav-mobile-menu summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.875rem 0;
+  font-weight: 500;
+  color: var(--color-white);
+  cursor: pointer;
+  list-style: none;
+}
+
+.nav-mobile-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.nav-mobile-menu summary::after {
+  content: '+';
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.nav-mobile-menu[open] summary::after {
+  content: '\2212';
+}
+
+.nav-mobile-groups {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding-bottom: 0.75rem;
+}
+
+.nav-mobile-group {
+  margin: 0.75rem 0 0.25rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-white);
+}
+
+.nav-mobile-group:first-child {
+  margin-top: 0;
+}
+
+.nav-mobile-menu ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.nav-mobile-menu li {
+  padding-block: 0.3rem;
+  font-family: var(--font-menu);
+  font-size: 0.9375rem;
+  color: var(--color-on-red);
+}
+
+@media (min-width: 560px) {
+  .nav-mobile-menu ul {
+    columns: 2;
+    column-gap: var(--spacing-lg);
+  }
+
+  .nav-mobile-menu li {
+    break-inside: avoid;
+  }
+}
+
 /* Links to pages that aren't live yet: shown, but not clickable. */
 a.is-disabled,
 a.is-disabled:hover {
@@ -430,6 +760,17 @@ a.is-disabled:hover {
 /* White gap between the red navbar and a red hero on any page. */
 main > .hero:first-child {
   margin-top: 1rem;
+}
+
+/* The original header sat flush on the hero, with no mobile call bar. */
+.is-legacy main > .hero:first-child {
+  margin-top: 0;
+}
+
+@media (max-width: 768px) {
+  body.is-legacy {
+    padding-bottom: 0;
+  }
 }
 
 .mobile-call-bar {
@@ -447,15 +788,17 @@ main > .hero:first-child {
   display: none;
 }
 
-/* Home hero. One grid: the gradient panel runs from just inside the content
-   column to the right edge of the viewport. The message runs across the top;
-   below it the quote form overhangs the panel's left and bottom edges, with
-   price, call and terms stacked in the column beside it.
-   Columns: gutter | form overhang | form | flexible | gutter. */
+/* Home hero. One grid: the gradient panel runs from a narrow left margin to
+   the right edge of the viewport. The message runs across the top; below it
+   the quote form shares the panel's left edge and overhangs its bottom, with
+   price, call and terms stacked beside it. The right gutter matches the page
+   content column; the left one is narrower, capped so very wide screens
+   don't stretch the hero.
+   Columns: left margin | form | flexible | gutter. */
 .home-hero {
+  --hero-left: max(1.5rem, calc((100% - 90rem) / 2));
   --hero-gutter: max(2rem, calc((100% - 71rem) / 2));
-  --hero-overhang: 3.5rem;
-  --hero-form: 22rem;
+  --hero-form: 25.5rem;
   --hero-drop: 11rem;
 
   background: var(--color-paper);
@@ -466,9 +809,8 @@ main > .hero:first-child {
 .hero-stage {
   display: grid;
   grid-template-columns:
-    [full-start] var(--hero-gutter)
-    [content-start] var(--hero-overhang)
-    [red-start] var(--hero-form)
+    [full-start] var(--hero-left)
+    [content-start red-start] var(--hero-form)
     [form-end] minmax(0, 25.5rem)
     [aside-start] minmax(0, 1fr)
     [content-end] var(--hero-gutter)
@@ -596,7 +938,9 @@ main > .hero:first-child {
   grid-column: red-start / content-end;
   grid-row: 1;
   max-width: 72%;
-  padding: 2.5rem 2.5rem 1.75rem 3rem;
+  /* Left padding matches .hero-form's, so the headline and the form's
+     text start on the same line. */
+  padding: 2.5rem 2.5rem 1.75rem 1.5rem;
   color: var(--color-white);
 }
 
@@ -727,7 +1071,7 @@ main > .hero:first-child {
   color: var(--color-white);
 }
 
-/* Quote form: overlaps the panel's left and bottom edges. */
+/* Quote form: lines up with the panel's left edge and overlaps its bottom. */
 .hero-form {
   scroll-margin-top: 6rem;
   grid-column: content-start / form-end;
@@ -847,12 +1191,7 @@ main > .hero:first-child {
 
 @media (max-width: 1100px) {
   .home-hero {
-    --hero-overhang: 2rem;
-    --hero-form: 20rem;
-  }
-
-  .hero-msg {
-    padding-left: 2.5rem;
+    --hero-form: 22rem;
   }
 
   .hero-offer {
@@ -2229,6 +2568,12 @@ main > .hero:first-child {
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
+/* /home-old/: the "Best value" tier stands out a little. */
+.pricing-card.is-best {
+  border-color: var(--color-red);
+  box-shadow: 0 12px 32px rgba(220, 38, 38, 0.15);
+}
+
 .pricing-card:hover {
   transform: translateY(-0.5rem);
   box-shadow: 0 12px 32px rgba(220, 38, 38, 0.15);
@@ -2283,9 +2628,17 @@ main > .hero:first-child {
   margin-top: auto;
 }
 
+/* Outline button on the red banner. It used to have a white background, which
+   hid its white text. */
 .cta-invert {
+  background: transparent;
   color: var(--color-white);
   border-color: var(--color-white);
+}
+
+.cta-invert:hover {
+  background: var(--color-white);
+  color: var(--color-red);
 }
 
 /* Services Section */
@@ -2296,34 +2649,86 @@ main > .hero:first-child {
 
 .services h2 {
   text-align: center;
-  margin-bottom: 4rem;
+  margin-bottom: 0.75rem;
   color: var(--color-gray-900);
+}
+
+.services h2::after {
+  content: '';
+  display: block;
+  width: 3.5rem;
+  height: 4px;
+  margin: 1rem auto 0;
+  border-radius: 999px;
+  background: linear-gradient(to right, var(--color-red), var(--color-orange));
+}
+
+.services-lead {
+  max-width: 36rem;
+  margin: 0 auto 3.5rem;
+  text-align: center;
+  text-wrap: balance;
+  font-size: 1.0625rem;
+  color: var(--color-gray-600);
 }
 
 .services-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+.service-icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  margin-bottom: 0.25rem;
+  flex-shrink: 0;
+  margin-bottom: 0;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--color-white);
+}
+
+.service-icon svg {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 
 .service-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   background: var(--color-white);
-  padding: 2.25rem;
+  padding: 0;
   border-radius: var(--radius-lg);
   border: 2px solid var(--color-gray-200);
   transition: all 0.3s ease;
   position: relative;
 }
 
-.service-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(to right, var(--color-red), var(--color-orange));
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+.service-card-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-height: 5.5rem;
+  padding: 1.25rem 1.5rem;
+  background: linear-gradient(135deg, var(--color-red) 0%, var(--color-orange) 100%);
+}
+
+.service-card .service-card-head h3 {
+  margin: 0;
+  font-size: 1.1875rem;
+  line-height: 1.2;
+  color: var(--color-white);
+}
+
+.service-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 1.5rem;
 }
 
 .service-card:hover {
@@ -2344,9 +2749,70 @@ main > .hero:first-child {
   line-height: 1.7;
 }
 
+/* Short checklist, then a call link pinned to the bottom of every card. */
+.service-points {
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+  margin: 0 0 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-gray-200);
+}
+
+.service-points li {
+  position: relative;
+  padding-left: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-gray-700);
+}
+
+.service-points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  background: var(--color-red);
+}
+
+.service-link {
+  margin-top: auto;
+  padding: 0.7rem 1rem;
+  border: 1.5px solid var(--color-red);
+  border-radius: var(--radius-md);
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--color-red);
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.service-link:hover {
+  background: var(--color-red);
+  color: var(--color-white);
+}
+
+.service-link:focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 3px;
+}
+
+.service-link span {
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.service-link:hover span {
+  transform: translateX(3px);
+}
+
 /* Why Us Section */
 .why-us {
-  background: var(--color-gray-900);
+  background: var(--color-ink);
   color: var(--color-white);
   padding: 6rem 3rem;
 }
@@ -2359,13 +2825,19 @@ main > .hero:first-child {
 
 .why-us-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 3rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2.5rem;
+}
+
+.why-us-item {
+  padding-top: 1.5rem;
+  border-top: 3px solid var(--color-red);
 }
 
 .why-us-item h3 {
-  color: var(--color-red);
-  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  color: var(--color-red-light);
+  margin-bottom: 0.75rem;
 }
 
 .why-us-item p {
@@ -2375,10 +2847,40 @@ main > .hero:first-child {
 
 /* CTA Banner */
 .cta-banner {
+  position: relative;
+  overflow: hidden;
   background: linear-gradient(135deg, var(--color-red) 0%, var(--color-orange) 100%);
   color: var(--color-white);
-  padding: 4rem 3rem;
+  padding: 4.5rem 3rem;
   text-align: center;
+}
+
+.cta-banner::before,
+.cta-banner::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.cta-banner::before {
+  width: 26rem;
+  height: 26rem;
+  top: -14rem;
+  right: -6rem;
+  background: var(--color-hero-circle);
+}
+
+.cta-banner::after {
+  width: 16rem;
+  height: 16rem;
+  bottom: -10rem;
+  left: 8%;
+  background: var(--color-hero-circle-soft);
+}
+
+.cta-banner .wrap {
+  position: relative;
 }
 
 .cta-banner h2 {
@@ -2586,6 +3088,20 @@ main > .hero:first-child {
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .services-grid,
+  .why-us-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .services-grid,
+  .why-us-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   h1 { font-size: 2.5rem; }
   h2 { font-size: 2rem; }

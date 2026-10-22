@@ -1,0 +1,110 @@
+---
+// The original site header (as at commit 776c09e), used only on /home-old/.
+// Styles are scoped here so they can't clash with the current Navbar.
+// Pages that no longer exist show as disabled links, as in the current navbar.
+import { business } from '../config/business';
+
+const links = [
+  { href: '/', label: 'Home', live: true },
+  { href: '/services/', label: 'Services', live: false },
+  { href: '/about/', label: 'About', live: false },
+  { href: '/contact/', label: 'Contact', live: false },
+];
+const path = Astro.url.pathname;
+---
+
+<header class="old-header">
+  <div class="wrap">
+    <a href="/" class="old-brand">
+      <span class="old-word">Reboot Your Computer</span>
+      <span class="old-tagline">Fast Repairs Brisbane</span>
+    </a>
+    <nav class="old-nav" aria-label="Main">
+      {links.map((link) => link.live ? (
+        <a href={link.href} aria-current={path === link.href ? 'page' : undefined}>{link.label}</a>
+      ) : (
+        <a class="is-disabled" aria-disabled="true">{link.label}</a>
+      ))}
+    </nav>
+    <a href={business.phoneHref} class="btn btn-primary old-cta">Call Us</a>
+  </div>
+</header>
+
+<style>
+  .old-header {
+    background: var(--color-white);
+    border-bottom: 1px solid var(--color-gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .old-header .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-lg);
+    padding-block: var(--spacing-lg);
+  }
+
+  .old-brand {
+    display: flex;
+    flex-direction: column;
+    color: var(--color-gray-900);
+  }
+
+  .old-brand:hover {
+    color: var(--color-gray-900);
+  }
+
+  .old-word {
+    font-family: var(--font-display);
+    font-size: 1.25rem;
+    font-weight: 700;
+  }
+
+  .old-tagline {
+    font-size: 0.75rem;
+    color: var(--color-gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .old-nav {
+    display: flex;
+    gap: var(--spacing-2xl);
+  }
+
+  .old-nav a {
+    font-size: 0.95rem;
+    color: var(--color-gray-700);
+    transition: color 0.2s ease;
+  }
+
+  .old-nav a:hover,
+  .old-nav a[aria-current="page"] {
+    color: var(--color-red);
+  }
+
+  .old-nav a.is-disabled:hover {
+    color: var(--color-gray-700);
+  }
+
+  .old-cta {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+  }
+
+  /* As on the original site, the links drop away on small screens. */
+  @media (max-width: 960px) {
+    .old-nav {
+      gap: var(--spacing-lg);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .old-nav {
+      display: none;
+    }
+  }
+</style>
